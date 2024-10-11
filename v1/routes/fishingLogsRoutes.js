@@ -5,3 +5,5 @@ const router = express.Router();
 
 // Récupérer tous les logs de pêche
 router.get('/', fishingLogsController.getFishingLogs);
+
+module.exports = router ;

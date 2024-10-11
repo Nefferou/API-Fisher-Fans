@@ -5,3 +5,5 @@ const router = express.Router();
 
 // Récupérer tous les sorties de pêche
 router.get('/', fishingTripsController.getFishingTrips);
+
+module.exports = router ;

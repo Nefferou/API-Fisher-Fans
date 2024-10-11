@@ -8,3 +8,5 @@ router.get('/', boatsController.getBoats);
 
 // Récupérer les détails d'un bateau
 router.post('/', boatsController.createBoat);
+
+module.exports = router ;

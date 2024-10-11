@@ -1,4 +1,4 @@
-import Boat from '../models/boatModel.js';
+const Boat = require('../models/boatModel');
 
 exports.getBoats = async (req, res) => {
     const filters = {};

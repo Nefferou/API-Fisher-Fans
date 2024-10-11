@@ -5,3 +5,5 @@ const router = express.Router();
 
 // Récupérer toutes les réservations
 router.get('/', reservationsController.getReservations);
+
+module.exports = router ;
