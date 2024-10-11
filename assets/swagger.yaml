@@ -1,0 +1,444 @@
+openapi: 3.1.0
+info:
+  title: Fishing Friends API
+  description: API pour gérer les utilisateurs, bateaux, sorties de pêche, réservations et carnets de pêche.
+  version: 3.0.0
+  
+servers:
+  - url: https://localhost:3000
+    description: Serveur local sécurisé pour les tests de développement.
+  - url: https://api.fishingfriends.com
+    description: Serveur de production pour l'API Fishing Friends.
+
+tags:
+  - name: users
+    description: Gestion des utilisateurs
+  - name: boats
+    description: Opérations sur les bateaux
+  - name: fishing trip
+    description: Gestion des sorties de pêche
+  - name: fishing log
+    description: Gestion des carnets de pêche
+  - name: reservation
+    description: Gestion des réservations
+
+paths:
+  /v1/users:
+    get:
+      tags:
+        - users
+      summary: Récupérer tous les utilisateurs
+      responses:
+        '200':
+          description: Liste des utilisateurs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+    post:
+      tags:
+        - users
+      summary: Créer un nouvel utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Utilisateur créé
+          
+  /v1/users/{userId}:
+    get:
+      tags:
+        - users
+      summary: Récupérer un utilisateur par son ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+          description: ID de l'utilisateur
+      responses:
+        '200':
+          description: Détails de l'utilisateur
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          description: Utilisateur non trouvé
+    put:
+      tags:
+        - users
+      summary: Mettre à jour un utilisateur par son ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Utilisateur mis à jour
+    delete:
+      tags:
+        - users
+      summary: Supprimer un utilisateur par son ID
+      parameters:
+        - in: path
+          name: userId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Utilisateur supprimé
+
+  /v1/boats:
+    get:
+      tags:
+        - boats
+      summary: Récupérer tous les bateaux
+      responses:
+        '200':
+          description: Liste des bateaux
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Boat'
+    post:
+      tags:
+        - boats
+      summary: Créer un nouveau bateau
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Boat'
+      responses:
+        '201':
+          description: Bateau créé
+
+  /v1/boats/{boatId}:
+    get:
+      tags:
+        - boats
+      summary: Récupérer un bateau par son ID
+      parameters:
+        - in: path
+          name: boatId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails du bateau
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Boat'
+        '404':
+          description: Bateau non trouvé
+    put:
+      tags:
+        - boats
+      summary: Mettre à jour un bateau par son ID
+      parameters:
+        - in: path
+          name: boatId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Boat'
+      responses:
+        '200':
+          description: Bateau mis à jour
+    delete:
+      tags:
+        - boats
+      summary: Supprimer un bateau par son ID
+      parameters:
+        - in: path
+          name: boatId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Bateau supprimé
+
+  /v1/fishing-trips:
+    get:
+      tags:
+        - fishing trip
+      summary: Récupérer toutes les sorties de pêche
+      responses:
+        '200':
+          description: Liste des sorties de pêche
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FishingTrip'
+    post:
+      tags:
+        - fishing trip
+      summary: Créer une nouvelle sortie de pêche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FishingTrip'
+      responses:
+        '201':
+          description: Sortie de pêche créée
+
+  /v1/fishing-trips/{tripId}:
+    get:
+      tags:
+        - fishing trip
+      summary: Récupérer une sortie de pêche par son ID
+      parameters:
+        - in: path
+          name: tripId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de la sortie de pêche
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FishingTrip'
+        '404':
+          description: Sortie non trouvée
+    put:
+      tags:
+        - fishing trip
+      summary: Mettre à jour une sortie de pêche par son ID
+      parameters:
+        - in: path
+          name: tripId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FishingTrip'
+      responses:
+        '200':
+          description: Sortie de pêche mise à jour
+    delete:
+      tags:
+        - fishing trip
+      summary: Supprimer une sortie de pêche par son ID
+      parameters:
+        - in: path
+          name: tripId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Sortie de pêche supprimée
+
+  /v1/reservations:
+    get:
+      tags:
+        - reservation
+      summary: Récupérer toutes les réservations
+      responses:
+        '200':
+          description: Liste des réservations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reservation'
+    post:
+      tags:
+        - reservation
+      summary: Créer une nouvelle réservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '201':
+          description: Réservation créée
+
+  /v1/reservations/{reservationId}:
+    get:
+      tags:
+        - reservation
+      summary: Récupérer une réservation par son ID
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Détails de la réservation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reservation'
+        '404':
+          description: Réservation non trouvée
+    put:
+      tags:
+        - reservation
+      summary: Mettre à jour une réservation par son ID
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reservation'
+      responses:
+        '200':
+          description: Réservation mise à jour
+    delete:
+      tags:
+        - reservation
+      summary: Supprimer une réservation par son ID
+      parameters:
+        - in: path
+          name: reservationId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Réservation supprimée
+
+  /v1/fishing-logs:
+    get:
+      tags:
+        - fishing log
+      summary: Récupérer tous les carnets de pêche
+      responses:
+        '200':
+          description: Liste des carnets de pêche
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FishingLog'
+    post:
+      tags:
+        - fishing log
+      summary: Créer un nouveau carnet de pêche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FishingLog'
+      responses:
+        '204':
+          description: Carnet de pêche ajouté
+     
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        surname:
+          type: string
+        email:
+          type: string
+        password:
+          type: string
+        oedipp:
+          type: string
+          nullable: true
+
+    Boat:
+      type: object
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: integer
+        location:
+          type: string
+
+    FishingTrip:
+      type: object
+      properties:
+        id:
+          type: integer
+        organiserId:
+          type: integer
+        boatId:
+          type: integer
+        remainingSeats:
+          type: integer
+        date:
+          type: string
+          format: date
+
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+        tripId:
+          type: integer
+        userId:
+          type: integer
+        status:
+          type: string
+          enum: [pending, confirmed, cancelled]
+
+    FishingLog:
+      type: object
+      properties:
+        id:
+          type: integer
+        ownerId:
+          type: integer
+        entries:
+          type: string
