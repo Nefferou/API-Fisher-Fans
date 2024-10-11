@@ -1,12 +1,14 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/authRoutes');
-const usersRoutes = require('./routes/usersRoutes');
-const boatsRoutes = require('./routes/boatsRoutes');
-const fishingTripsRoutes = require('./routes/fishingTripsRoutes');
-const reservationsRoutes = require('./routes/reservationsRoutes');
-const fishingLogsRoutes = require('./routes/fishingLogsRoutes');
+
+// Import V1 Routes
+const v1AuthRoutes = require('./v1/routes/authRoutes');
+const v1UsersRoutes = require('./v1/routes/usersRoutes');
+const v1BoatsRoutes = require('./v1/routes/boatsRoutes');
+const v1FishingTripsRoutes = require('./v1/routes/fishingTripsRoutes');
+const v1ReservationsRoutes = require('./v1/routes/reservationsRoutes');
+const v1FishingLogsRoutes = require('./v1/routes/fishingLogsRoutes');
 
 dotenv.config();
 
@@ -21,13 +23,13 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .then(() => console.log('MongoDB connecté'))
     .catch(err => console.error('Erreur de connexion à MongoDB', err));
 
-// Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/users', usersRoutes);
-app.use('/api/boats', boatsRoutes);
-app.use('/api/fishingTrips', fishingTripsRoutes);
-app.use('/api/reservations', reservationsRoutes);
-app.use('/api/fishingLogs', fishingLogsRoutes);
+// V1 Routes
+app.use('/api/v1/auth', v1AuthRoutes);
+app.use('/api/v1/users', v1UsersRoutes);
+app.use('/api/v1/boats', v1BoatsRoutes);
+app.use('/api/v1/fishingTrips', v1FishingTripsRoutes);
+app.use('/api/v1/reservations', v1ReservationsRoutes);
+app.use('/api/v1/fishingLogs', v1FishingLogsRoutes);
 
 app.listen(port, () => {
     console.log(`API démarrée sur http://localhost:${port}`);
