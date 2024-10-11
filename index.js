@@ -24,12 +24,12 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
     .catch(err => console.error('Erreur de connexion à MongoDB', err));
 
 // V1 Routes
-app.use('/api/v1/auth', v1AuthRoutes);
-app.use('/api/v1/users', v1UsersRoutes);
-app.use('/api/v1/boats', v1BoatsRoutes);
-app.use('/api/v1/fishingTrips', v1FishingTripsRoutes);
-app.use('/api/v1/reservations', v1ReservationsRoutes);
-app.use('/api/v1/fishingLogs', v1FishingLogsRoutes);
+app.use('v1/auth', v1AuthRoutes);
+app.use('v1/users', v1UsersRoutes);
+app.use('v1/boats', v1BoatsRoutes);
+app.use('v1/fishingTrips', v1FishingTripsRoutes);
+app.use('v1/reservations', v1ReservationsRoutes);
+app.use('v1/fishingLogs', v1FishingLogsRoutes);
 
 app.listen(port, () => {
     console.log(`API démarrée sur http://localhost:${port}`);
