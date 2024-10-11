@@ -7,8 +7,6 @@ info:
 servers:
   - url: https://localhost:3000
     description: Serveur local sécurisé pour les tests de développement.
-  - url: https://api.fishingfriends.com
-    description: Serveur de production pour l'API Fishing Friends.
 
 tags:
   - name: users
@@ -28,6 +26,12 @@ paths:
       tags:
         - users
       summary: Récupérer tous les utilisateurs
+      parameters:
+        - name: name
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Liste des utilisateurs
@@ -61,7 +65,7 @@ paths:
           name: userId
           required: true
           schema:
-            type: integer
+            type: string
           description: ID de l'utilisateur
       responses:
         '200':
@@ -81,7 +85,7 @@ paths:
           name: userId
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -100,7 +104,7 @@ paths:
           name: userId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Utilisateur supprimé
@@ -110,6 +114,12 @@ paths:
       tags:
         - boats
       summary: Récupérer tous les bateaux
+      parameters:
+        - name: ownerId
+          in: query
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: Liste des bateaux
@@ -143,7 +153,7 @@ paths:
           name: boatId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: Détails du bateau
@@ -162,7 +172,7 @@ paths:
           name: boatId
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -181,7 +191,7 @@ paths:
           name: boatId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Bateau supprimé
@@ -191,6 +201,13 @@ paths:
       tags:
         - fishing trip
       summary: Récupérer toutes les sorties de pêche
+      parameters:
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
       responses:
         '200':
           description: Liste des sorties de pêche
@@ -224,7 +241,7 @@ paths:
           name: tripId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: Détails de la sortie de pêche
@@ -243,7 +260,7 @@ paths:
           name: tripId
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -262,7 +279,7 @@ paths:
           name: tripId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Sortie de pêche supprimée
@@ -272,6 +289,12 @@ paths:
       tags:
         - reservation
       summary: Récupérer toutes les réservations
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         '200':
           description: Liste des réservations
@@ -305,7 +328,7 @@ paths:
           name: reservationId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '200':
           description: Détails de la réservation
@@ -324,7 +347,7 @@ paths:
           name: reservationId
           required: true
           schema:
-            type: integer
+            type: string
       requestBody:
         required: true
         content:
@@ -343,7 +366,7 @@ paths:
           name: reservationId
           required: true
           schema:
-            type: integer
+            type: string
       responses:
         '204':
           description: Réservation supprimée
@@ -353,6 +376,12 @@ paths:
       tags:
         - fishing log
       summary: Récupérer tous les carnets de pêche
+      parameters:
+        - name: ownerId
+          in: query
+          required: false
+          schema:
+            type: integer
       responses:
         '200':
           description: Liste des carnets de pêche
@@ -383,62 +412,239 @@ components:
       properties:
         id:
           type: integer
+          description: Identifiant unique de l'utilisateur
         name:
           type: string
+          description: Nom de l'utilisateur
         surname:
           type: string
+          description: Prénom de l'utilisateur
         email:
           type: string
-        password:
+          format: email
+          description: Adresse email de l'utilisateur
+        tel:
           type: string
-        oedipp:
+          description: Numéro de téléphone de l'utilisateur
+        adress:
           type: string
-          nullable: true
+          description: Adresse de l'utilisateur
+        postal_code:
+          type: string
+          description: Code postal de l'utilisateur
+        city:
+          type: string
+          description: Ville de l'utilisateur
+        spoken_languages:
+          type: array
+          items:
+            type: string
+          description: Langues parlées par l'utilisateur
+        profile_picture:
+          type: string
+          description: URL de la photo de profil de l'utilisateur
+        boat_license:
+          type: string
+          description: Numéro de permis bateau de l'utilisateur
+        insurance_number:
+          type: string
+          description: Numéro d'assurance de l'utilisateur
+        status:
+          type: string
+          enum: [particulier, professionnel]
+          description: Statut de l'utilisateur
+        society_name:
+          type: string
+          description: Nom de la société de l'utilisateur
+        activity_type:
+          type: string
+          description: Type d'activité de l'utilisateur
+        siret_number:
+          type: string
+          description: Numéro de SIRET de l'utilisateur
+        rc_number:
+          type: string
+          description: Numéro de RC de l'utilisateur
+        fishing_log:
+          type: integer
+          description: URL du carnet de pêche de l'utilisateur
+        boat_list:
+          type: array
+          description: Liste des bateaux de l'utilisateur
+          items:
+            type: string
+            description: Identifiant du bateau
+        fishing_trip_list:
+          type: array
+          description: Liste des sorties de pêche de l'utilisateur
+          items:
+            type: string
+            description: Identifiant de la sortie de pêche
+        reservation_list:
+          type: array
+          description: Liste des réservations de l'utilisateur
+          items:
+            type: string
+            description: Identifiant de la réservation
 
     Boat:
       type: object
       properties:
         id:
           type: integer
-        ownerId:
+          description: Identifiant unique du bateau
+        name:
+          type: string
+          description: Nom du bateau
+        description:
+          type: string
+          description: Brève description du bateau
+        picture:
+          type: string
+          description: URL de la photo du bateau
+        require_licence_type:
+          type: string
+          enum: [cotier, fluvial]
+          description: Type de permis bateau requis
+        boat_type:
+          type: string,
+          enum: [open, cabine, catamaran, voilier, jet-ski, canoe]
+          description: Type de bateau
+        equipment:
+          type: array
+          items:
+            type: string
+            enum: [sondeur, vivier, gps, echelle, porte-cannes, radio]
+          description: Liste de l'équipement disponible sur le bateau
+        bail:
           type: integer
+          description: Prix de la causion du bateau
+        max_capacity:
+          type: integer
+          description: Capacité maximale du bateau en nombre de passagers
+        city:
+          type: string
+          description: Ville de stationnement du bateau
         location:
           type: string
+          description: Coordonnées GPS du bateau
+        motor_type:
+          type: string
+          enum: [diesel, essence, aucun]
+          description: Type de moteur du bateau
+        motor_power:
+          type: integer
+          description: Puissance du moteur en chevaux
 
     FishingTrip:
       type: object
       properties:
         id:
           type: integer
-        organiserId:
-          type: integer
-        boatId:
-          type: integer
-        remainingSeats:
-          type: integer
+          description: Identifiant unique de la sortie de pêche
+        information:
+          type: string
+          description: Informations complémentaires sur la sortie de pêche
+        trip_type:
+          type: string
+          enum: [journaliere, recurente]
+          description: Type de sortie de pêche
+        cost_type:
+          type: string
+          enum: [global, par personne]
+          description: Type de coût de la sortie de pêche
         date:
           type: string
           format: date
+          description: Date de la sortie de pêche
+        time:
+          type: string
+          format: time
+          description: Heure de la sortie de pêche
+        passagers:
+          type: array
+          description: Liste des passagers de la sortie de pêche
+          items:
+            type: string
+            description: Identifiant de l'utilisateur
+        trip_price:
+          type: integer
+          description: Prix de la sortie de pêche
+        boat:
+          type: string
+          description: Identifiant du bateau utilisé pour la sortie de pêche
+        organiser:
+          type: string
+          description: Identifiant de l'organisateur de la sortie de pêche
 
     Reservation:
       type: object
       properties:
         id:
-          type: integer
-        tripId:
-          type: integer
+          type: string
+          description: Identifiant unique de la réservation
+        fishingTripId:
+          type: string
+          description: Identifiant de la sortie de pêche associée à la réservation
         userId:
-          type: integer
+          type: string
+          description: Identifiant de l'utilisateur ayant fait la réservation
         status:
           type: string
           enum: [pending, confirmed, cancelled]
+          description: Statut de la réservation
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création de la réservation
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de la dernière mise à jour de la réservation
 
     FishingLog:
       type: object
+      required:
+        - id
+        - ownerId
+        - entries
       properties:
         id:
-          type: integer
-        ownerId:
-          type: integer
-        entries:
           type: string
+          description: Identifiant unique du carnet de pêche
+        ownerId:
+          type: string
+          description: Identifiant de l'utilisateur propriétaire du carnet de pêche
+        entries:
+          type: array
+          description: Liste des entrées du carnet de pêche
+          items:
+            type: object
+            properties:
+              date:
+                type: string
+                format: date-time
+                description: Date de l'entrée dans le carnet
+              speciesCaught:
+                type: string
+                description: Espèces de poisson capturées
+              quantity:
+                type: integer
+                description: Nombre de poissons capturés
+              location:
+                type: string
+                description: Lieu de la prise
+              baitUsed:
+                type: string
+                description: Appât utilisé lors de la prise
+              notes:
+                type: string
+                description: Notes supplémentaires sur l'entrée
+        createdAt:
+          type: string
+          format: date-time
+          description: Date de création du carnet de pêche
+        updatedAt:
+          type: string
+          format: date-time
+          description: Date de la dernière mise à jour du carnet de pêche
