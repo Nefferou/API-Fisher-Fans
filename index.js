@@ -1,12 +1,12 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const authRoutes = require('./routes/auth');
-const userRoutes = require('./routes/users');
-const boatRoutes = require('./routes/boats');
-const fishingTripRoutes = require('./routes/fishingTrips');
-const reservationRoutes = require('./routes/reservations');
-const fishingLogRoutes = require('./routes/fishingLogs');
+const authRoutes = require('./routes/authRoutes');
+const usersRoutes = require('./routes/usersRoutes');
+const boatsRoutes = require('./routes/boatsRoutes');
+const fishingTripsRoutes = require('./routes/fishingTripsRoutes');
+const reservationsRoutes = require('./routes/reservationsRoutes');
+const fishingLogsRoutes = require('./routes/fishingLogsRoutes');
 
 dotenv.config();
 
@@ -23,11 +23,11 @@ mongoose.connect(process.env.MONGODB_URI, { useNewUrlParser: true, useUnifiedTop
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
-app.use('/api/boats', boatRoutes);
-app.use('/api/fishingTrips', fishingTripRoutes);
-app.use('/api/reservations', reservationRoutes);
-app.use('/api/fishingLogs', fishingLogRoutes);
+app.use('/api/users', usersRoutes);
+app.use('/api/boats', boatsRoutes);
+app.use('/api/fishingTrips', fishingTripsRoutes);
+app.use('/api/reservations', reservationsRoutes);
+app.use('/api/fishingLogs', fishingLogsRoutes);
 
 app.listen(port, () => {
     console.log(`API démarrée sur http://localhost:${port}`);
