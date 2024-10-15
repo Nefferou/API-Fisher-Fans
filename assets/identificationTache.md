@@ -1,6 +1,6 @@
 # 1. Infrastructure et Sécurité
 
-### 1.1. Initialisation du projet Express
+### 1.1. Initialisation du projet Express 
 
 Configurer un projet Express avec Node.js.
 Installer les dépendances nécessaires (express, mongoose, dotenv, jsonwebtoken, etc...).

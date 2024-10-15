@@ -472,19 +472,19 @@ components:
           type: array
           description: Liste des bateaux de l'utilisateur
           items:
-            type: string
+            type: integer
             description: Identifiant du bateau
         fishing_trip_list:
           type: array
           description: Liste des sorties de pêche de l'utilisateur
           items:
-            type: string
+            type: integer
             description: Identifiant de la sortie de pêche
         reservation_list:
           type: array
           description: Liste des réservations de l'utilisateur
           items:
-            type: string
+            type: integer
             description: Identifiant de la réservation
 
     Boat:
@@ -571,37 +571,30 @@ components:
           type: integer
           description: Prix de la sortie de pêche
         boat:
-          type: string
+          type: integer
           description: Identifiant du bateau utilisé pour la sortie de pêche
         organiser:
-          type: string
+          type: integer
           description: Identifiant de l'organisateur de la sortie de pêche
 
     Reservation:
       type: object
       properties:
         id:
-          type: string
+          type: integer
           description: Identifiant unique de la réservation
-        fishingTripId:
+        trip:
           type: string
-          description: Identifiant de la sortie de pêche associée à la réservation
-        userId:
-          type: string
-          description: Identifiant de l'utilisateur ayant fait la réservation
-        status:
-          type: string
-          enum: [pending, confirmed, cancelled]
-          description: Statut de la réservation
-        createdAt:
-          type: string
-          format: date-time
-          description: Date de création de la réservation
-        updatedAt:
-          type: string
-          format: date-time
-          description: Date de la dernière mise à jour de la réservation
-
+          description: Identifiant de la sortie de pêche réservée
+        nb_places:
+          type: integer
+          description: Nombre de places
+        reservation_price:
+          type: integer
+          description: Prix de la réservation
+        organiser:
+          type: integer
+          description: Identifiant de l'organisateur de la réservation
     FishingLog:
       type: object
       required:
@@ -610,41 +603,34 @@ components:
         - entries
       properties:
         id:
-          type: string
+          type: integer
           description: Identifiant unique du carnet de pêche
+        fish_name:
+          type: string
+          description: Nom du poisson pêché
+        fish_picture:
+          type: string
+          description: URL de la photo du poisson pêché
+        comment:
+          type: string
+          description: Commentaire sur la pêche
+        height:
+          type: integer
+          description: Taille du poisson pêché
+        weight:
+          type: integer
+          description: Poids du poisson pêché
+        location:
+          type: string
+          description: Lieu de pêche
+        date:
+          type: string
+          format: date
+          description: Date de la pêche
+        freed:
+          type: boolean
+          description: Indique si le poisson a été relâché
         ownerId:
-          type: string
-          description: Identifiant de l'utilisateur propriétaire du carnet de pêche
-        entries:
-          type: array
-          description: Liste des entrées du carnet de pêche
-          items:
-            type: object
-            properties:
-              date:
-                type: string
-                format: date-time
-                description: Date de l'entrée dans le carnet
-              speciesCaught:
-                type: string
-                description: Espèces de poisson capturées
-              quantity:
-                type: integer
-                description: Nombre de poissons capturés
-              location:
-                type: string
-                description: Lieu de la prise
-              baitUsed:
-                type: string
-                description: Appât utilisé lors de la prise
-              notes:
-                type: string
-                description: Notes supplémentaires sur l'entrée
-        createdAt:
-          type: string
-          format: date-time
-          description: Date de création du carnet de pêche
-        updatedAt:
-          type: string
-          format: date-time
-          description: Date de la dernière mise à jour du carnet de pêche
+          type: integer
+          description: Identifiant de l'utilisateur ayant pêché le poisson
+        
