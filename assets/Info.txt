@@ -1,0 +1,5 @@
+Lien git : https://github.com/Nefferou/API-Fisher-Fans
+Rendu 1 : 
+- Identification des tâches à réaliser : identificationTache.md
+- Répartition des tâches : repartitionTache.md
+- Diagramme de relation entre les ressources : BDD.png
