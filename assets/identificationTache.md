@@ -3,11 +3,11 @@
 ### 1.1. Initialisation du projet Express 
 
 Configurer un projet Express avec Node.js.
-Installer les dépendances nécessaires (express, mongoose, dotenv, jsonwebtoken, etc...).
+Installer les dépendances nécessaires (express, dotenv, jsonwebtoken, etc...).
 
-### 1.2. Mise en place de la base de données MongoDB
+### 1.2. Mise en place de la base de données relationnelle PostgreSQL
 
-Configurer la connexion à MongoDB via Mongoose.
+Configurer la connexion à PostgreSQL via ng (client PostgreSQL natif pour Node.js).
 Créer les modèles pour les différentes entités : Users, Boats, FishingTrips, Reservations, FishingLogs.
 
 ### 1.3. Authentification des utilisateurs (BF1)

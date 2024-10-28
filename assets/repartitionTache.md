@@ -2,7 +2,7 @@
 
 ### 1.1. Initialisation du projet Express (Julien)
 
-### 1.2. Mise en place de la base de données MongoDB (Yves)
+### 1.2. Mise en place de la base de données relationnelle PostgreSQL (Yves)
 
 ### 1.3. Authentification des utilisateurs (Yves)
 

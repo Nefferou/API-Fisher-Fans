@@ -27,20 +27,25 @@ paths:
         - users
       summary: Récupérer tous les utilisateurs
       parameters:
-        - name: name
+        - surname: name
           in: query
           required: false
           schema:
             type: string
+          description: Filtrer les utilisateurs par nom
       responses:
         '200':
-          description: Liste des utilisateurs
+          description: Liste des utilisateurs récupérée avec succès
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
     post:
       tags:
         - users
@@ -53,7 +58,13 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '201':
-          description: Utilisateur créé
+          description: Utilisateur créé avec succès
+        '400':
+          description: Requête invalide
+        '409':
+          description: Conflit, l'utilisateur existe déjà
+        '500':
+          description: Erreur serveur
           
   /v1/users/{userId}:
     get:
@@ -66,16 +77,18 @@ paths:
           required: true
           schema:
             type: string
-          description: ID de l'utilisateur
+          description: ID unique de l'utilisateur
       responses:
         '200':
-          description: Détails de l'utilisateur
+          description: Détails de l'utilisateur récupérés avec succès
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
         '404':
           description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
     put:
       tags:
         - users
@@ -86,6 +99,7 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de l'utilisateur
       requestBody:
         required: true
         content:
@@ -94,7 +108,13 @@ paths:
               $ref: '#/components/schemas/User'
       responses:
         '200':
-          description: Utilisateur mis à jour
+          description: Utilisateur mis à jour avec succès
+        '400':
+          description: Requête invalide
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
     delete:
       tags:
         - users
@@ -105,9 +125,14 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de l'utilisateur
       responses:
         '204':
-          description: Utilisateur supprimé
+          description: Utilisateur supprimé avec succès
+        '404':
+          description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
 
   /v1/boats:
     get:
@@ -120,15 +145,20 @@ paths:
           required: false
           schema:
             type: integer
+          description: ID du propriétaire pour filtrer les bateaux
       responses:
         '200':
-          description: Liste des bateaux
+          description: Liste des bateaux récupérée avec succès
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Boat'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
     post:
       tags:
         - boats
@@ -141,7 +171,11 @@ paths:
               $ref: '#/components/schemas/Boat'
       responses:
         '201':
-          description: Bateau créé
+          description: Bateau créé avec succès
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
 
   /v1/boats/{boatId}:
     get:
@@ -154,15 +188,18 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique du bateau
       responses:
         '200':
-          description: Détails du bateau
+          description: Détails du bateau récupérés avec succès
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Boat'
         '404':
-          description: Bateau non trouvé
+          description: Bateau non trouvé récupérés avec succès
+        '500':
+          description: Erreur serveur
     put:
       tags:
         - boats
@@ -173,6 +210,7 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique du bateau
       requestBody:
         required: true
         content:
@@ -181,7 +219,13 @@ paths:
               $ref: '#/components/schemas/Boat'
       responses:
         '200':
-          description: Bateau mis à jour
+          description: Bateau mis à jour avec succès
+        '400':
+            description: Requête invalide
+        '404':
+            description: Bateau non trouvé
+        '500':
+            description: Erreur serveur
     delete:
       tags:
         - boats
@@ -192,9 +236,14 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique du bateau
       responses:
         '204':
-          description: Bateau supprimé
+          description: Bateau supprimé avec succès
+        '404':
+            description: Bateau non trouvé
+        '500':
+            description: Erreur serveur
 
   /v1/fishing-trips:
     get:
@@ -208,15 +257,20 @@ paths:
           schema:
             type: string
             format: date
+          description: Filtrer les sorties de pêche par date
       responses:
         '200':
-          description: Liste des sorties de pêche
+          description: Liste des sorties de pêche récupérée avec succès
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/FishingTrip'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
     post:
       tags:
         - fishing trip
@@ -229,7 +283,11 @@ paths:
               $ref: '#/components/schemas/FishingTrip'
       responses:
         '201':
-          description: Sortie de pêche créée
+          description: Sortie de pêche créée avec succès
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
 
   /v1/fishing-trips/{tripId}:
     get:
@@ -242,15 +300,18 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de la sortie de pêche
       responses:
         '200':
-          description: Détails de la sortie de pêche
+          description: Détails de la sortie de pêche récupérés avec succès
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/FishingTrip'
         '404':
           description: Sortie non trouvée
+        '500':
+          description: Erreur serveur
     put:
       tags:
         - fishing trip
@@ -261,6 +322,7 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de la sortie de pêche
       requestBody:
         required: true
         content:
@@ -269,7 +331,11 @@ paths:
               $ref: '#/components/schemas/FishingTrip'
       responses:
         '200':
-          description: Sortie de pêche mise à jour
+          description: Sortie de pêche mise à jour avec succès
+        '400':
+          description: Requête invalide
+        '404':
+          description: Sortie non trouvée
     delete:
       tags:
         - fishing trip
@@ -280,9 +346,14 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de la sortie de pêche
       responses:
         '204':
-          description: Sortie de pêche supprimée
+          description: Sortie de pêche supprimée avec succès
+        '404':
+          description: Sortie non trouvée
+        '500':
+          description: Erreur serveur
 
   /v1/reservations:
     get:
@@ -295,15 +366,20 @@ paths:
           required: false
           schema:
             type: string
+          description: Filtrer les réservations par statut
       responses:
         '200':
-          description: Liste des réservations
+          description: Liste des réservations récupérée avec succès
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Reservation'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
     post:
       tags:
         - reservation
@@ -316,7 +392,11 @@ paths:
               $ref: '#/components/schemas/Reservation'
       responses:
         '201':
-          description: Réservation créée
+          description: Réservation créée avec succès
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
 
   /v1/reservations/{reservationId}:
     get:
@@ -329,15 +409,18 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de la réservation
       responses:
         '200':
-          description: Détails de la réservation
+          description: Détails de la réservation récupérés avec succès
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reservation'
         '404':
           description: Réservation non trouvée
+        '500':
+          description: Erreur serveur
     put:
       tags:
         - reservation
@@ -348,6 +431,7 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de la réservation
       requestBody:
         required: true
         content:
@@ -356,7 +440,11 @@ paths:
               $ref: '#/components/schemas/Reservation'
       responses:
         '200':
-          description: Réservation mise à jour
+          description: Réservation mise à jour avec succès
+        '400':
+          description: Requête invalide
+        '404':
+          description: Réservation non trouvée
     delete:
       tags:
         - reservation
@@ -367,9 +455,14 @@ paths:
           required: true
           schema:
             type: string
+          description: ID unique de la réservation
       responses:
         '204':
-          description: Réservation supprimée
+          description: Réservation supprimée avec succès
+        '404':
+          description: Réservation non trouvée
+        '500':
+          description: Erreur serveur
 
   /v1/fishing-logs:
     get:
@@ -382,15 +475,20 @@ paths:
           required: false
           schema:
             type: integer
+          description: ID de l'utilisateur pour filtrer les carnets de pêche
       responses:
         '200':
-          description: Liste des carnets de pêche
+          description: Liste des carnets de pêche récupérée avec succès
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/FishingLog'
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
     post:
       tags:
         - fishing log
@@ -403,8 +501,12 @@ paths:
               $ref: '#/components/schemas/FishingLog'
       responses:
         '204':
-          description: Carnet de pêche ajouté
-     
+          description: Carnet de pêche ajouté avec succès
+        '400':
+          description: Requête invalide
+        '500':
+          description: Erreur serveur
+
 components:
   schemas:
     User:
@@ -413,12 +515,16 @@ components:
         id:
           type: integer
           description: Identifiant unique de l'utilisateur
-        name:
-          type: string
-          description: Nom de l'utilisateur
         surname:
           type: string
+          description: Nom de l'utilisateur
+        firstname:
+          type: string
           description: Prénom de l'utilisateur
+        birthday:
+          type: string
+          format: date
+          description: Date de naissance de l'utilisateur
         email:
           type: string
           format: email
@@ -426,7 +532,7 @@ components:
         tel:
           type: string
           description: Numéro de téléphone de l'utilisateur
-        adress:
+        address:
           type: string
           description: Adresse de l'utilisateur
         postal_code:
@@ -507,7 +613,7 @@ components:
           enum: [cotier, fluvial]
           description: Type de permis bateau requis
         boat_type:
-          type: string,
+          type: string
           enum: [open, cabine, catamaran, voilier, jet-ski, canoe]
           description: Type de bateau
         equipment:
@@ -561,7 +667,7 @@ components:
           type: string
           format: time
           description: Heure de la sortie de pêche
-        passagers:
+        passengers:
           type: array
           description: Liste des passagers de la sortie de pêche
           items:
@@ -608,7 +714,7 @@ components:
         fish_name:
           type: string
           description: Nom du poisson pêché
-        fish_picture:
+        picture:
           type: string
           description: URL de la photo du poisson pêché
         comment:
@@ -630,7 +736,6 @@ components:
         freed:
           type: boolean
           description: Indique si le poisson a été relâché
-        ownerId:
+        owner:
           type: integer
           description: Identifiant de l'utilisateur ayant pêché le poisson
-        
