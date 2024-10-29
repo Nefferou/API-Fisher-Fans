@@ -245,7 +245,7 @@ paths:
         '500':
             description: Erreur serveur
 
-  /v1/fishing-trips:
+  /v1/trips:
     get:
       tags:
         - fishing trip
@@ -289,7 +289,7 @@ paths:
         '500':
           description: Erreur serveur
 
-  /v1/fishing-trips/{tripId}:
+  /v1/trips/{tripId}:
     get:
       tags:
         - fishing trip
@@ -631,8 +631,17 @@ components:
         city:
           type: string
           description: Ville de stationnement du bateau
-        location:
-          type: string
+        longitude1:
+          type: float
+          description: Coordonnées GPS du bateau
+        longitude2:
+          type: float
+          description: Coordonnées GPS du bateau
+        latitude1:
+          type: float
+          description: Coordonnées GPS du bateau
+        latitude2:
+          type: float
           description: Coordonnées GPS du bateau
         motor_type:
           type: string
