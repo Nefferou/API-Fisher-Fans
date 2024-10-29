@@ -27,8 +27,8 @@ paths:
         - users
       summary: Récupérer tous les utilisateurs
       parameters:
-        - surname: name
-          in: query
+        - in: query
+          name: surname
           required: false
           schema:
             type: string
