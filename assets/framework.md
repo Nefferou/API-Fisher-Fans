@@ -1,4 +1,4 @@
-# Comparatif des frameworks
+# Comparatif des frameworks (détaillé)
 
 ## 1. Express.js (Node.js)
 
@@ -61,6 +61,19 @@ Moins mature que Django REST Framework ou Flask. Documentation parfois insuffisa
 
 **Idéal pour** : Applications où la performance est cruciale et qui bénéficient d’un framework asynchrone et rapide.
 
+# Comparatif des frameworks (résumé)
+
+|Critères / Framework|Express.js|SpringBoot|Django|Flask|FastAPI|
+|-|-|-|-|-|-|
+|**Léger et flexible**|☑️|⬜|⬜|☑️|☑️|
+|**Grande documentation**|☑️|☑️|☑️|☑️|⬜|
+|**Performance élevée**|☑️|☑️|⬜|⬜|☑️|
+|**Facile pour API REST**|☑️|☑️|☑️|☑️|☑️|
+|**Fonctionnalités avancées**|⬜|☑️|☑️|⬜|⬜|
+|**Intégration base de données**|⬜|☑️|☑️|⬜|⬜|
+|**Asynchrone et rapide**|☑️|⬜|⬜|⬜|☑️|
+|**Compétences de l'équipe**|☑️|⬜|☑️|⬜|⬜|
+
 # Framework retenu
 
 **Express.js** est un excellent choix pour développer l'API Fishing Friends, et voici pourquoi :
@@ -73,6 +86,10 @@ Moins mature que Django REST Framework ou Flask. Documentation parfois insuffisa
 
 * **Communauté et écosystème riches** : Express est très populaire dans l’écosystème Node.js et bénéficie d’une grande communauté. En cas de problème, de nombreux modules, tutoriels et exemples de code sont disponibles pour aider à résoudre des problèmes spécifiques et ajouter des fonctionnalités comme la sécurité et la documentation via Swagger, ce qui est très utile pour une API publique ou partagée.
 
+* **Compatibilité avec PostgreSQL** : Express est parfaitement compatible avec PostgreSQL grâce à des modules comme `pg`, qui permettent de gérer les connexions à la base de données et d'exécuter des requêtes SQL efficacement. Cela assure une intégration fluide et optimise les performances des opérations CRUD sur les données stockées.
+
 * **Performance et scalabilité** : Bien qu'Express soit léger et simple, il reste performant pour la majorité des applications. Il gère bien la montée en charge, permettant d’optimiser facilement la réponse aux requêtes concurrentes, ce qui peut être utile pour une application potentiellement sollicitée par plusieurs utilisateurs en temps réel.
+
+* **Compétences adaptées de l'équipe** : L’équipe de développement possède des compétences bien adaptées à l’utilisation d’Express.js, ce qui permet une adoption rapide du framework et facilite la mise en œuvre efficace des fonctionnalités nécessaires.
 
 **Conclusion** : **Express.js** permet de déployer une API REST efficace et bien structurée, tout en maintenant une grande flexibilité pour étendre les fonctionnalités selon les besoins du projet Fisher Fans.
