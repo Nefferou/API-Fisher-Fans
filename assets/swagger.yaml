@@ -36,15 +36,22 @@ paths:
           schema:
             type: string
           description: Filtrer les utilisateurs par nom
+        - $ref: '#/components/parameters/PaginationPage'
+        - $ref: '#/components/parameters/PaginationLimit'
       responses:
         '200':
           description: Liste des utilisateurs récupérée avec succès
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
         '401':
@@ -163,15 +170,44 @@ paths:
           schema:
             type: integer
           description: ID du propriétaire pour filtrer les bateaux
+        - name: minLatitude
+          in: query
+          required: false
+          schema:
+            type: float
+          description: Latitude minimale pour filtrer les bateaux par zone géographique
+        - name: maxLatitude
+          in: query
+          required: false
+          schema:
+              type: float
+          description: Latitude maximale pour filtrer les bateaux par zone géographique
+        - name: minLongitude
+          in: query
+          required: false
+          schema:
+              type: float
+          description: Longitude minimale pour filtrer les bateaux par zone géographique
+        - name: maxLongitude
+          in: query
+          required: false
+          schema:
+              type: float
+          description: Longitude maximale pour filtrer les bateaux par zone géographique
       responses:
         '200':
           description: Liste des bateaux récupérée avec succès
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Boat'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Boat'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
         '401':
@@ -291,15 +327,34 @@ paths:
             type: string
             format: date
           description: Filtrer les sorties de pêche par date
+        - name: organizerId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filtrer par organisateur
+        - name: boatId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filtrer par bateau
+        - $ref: '#/components/parameters/PaginationPage'
+        - $ref: '#/components/parameters/PaginationLimit'
       responses:
         '200':
           description: Liste des sorties de pêche récupérée avec succès
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FishingTrip'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FishingTrip'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
         '401':
@@ -581,7 +636,48 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  parameters:
+    PaginationPage:
+      name: page
+      in: query
+      description: Numéro de la page à retourner
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Nombre d'éléments par page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
   schemas:
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Nombre total d'éléments
+        page:
+          type: integer
+          description: Page courante
+        pageSize:
+          type: integer
+          description: Nombre d'éléments par page
+        totalPages:
+          type: integer
+          description: Nombre total de pages
+        hasNextPage:
+          type: boolean
+          description: Indique s'il y a une page suivante
+        hasPrevPage:
+          type: boolean
+          description: Indique s'il y a une page précédente
+
     User:
       type: object
       properties:
