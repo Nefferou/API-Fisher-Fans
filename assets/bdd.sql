@@ -1,21 +1,18 @@
-CREATE DATABASE IF NOT EXISTS FisherFans;
-USE FisherFans;
-
 -- Table Equipments
 CREATE TABLE equipments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 -- Table Languages
 CREATE TABLE languages (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL
 );
 
 -- Table Users
 CREATE TABLE users (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     firstname VARCHAR(255) NOT NULL,
     lastname VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -25,25 +22,23 @@ CREATE TABLE users (
     postal_code VARCHAR(10),
     city VARCHAR(100),
     profile_picture VARCHAR(255),
-    status ENUM('particulier', 'professionnel') NOT NULL,
+    status VARCHAR(255) NOT NULL,
     society_name VARCHAR(255),
     activity_type VARCHAR(100),
     boat_license VARCHAR(50),
     insurance_number VARCHAR(50),
     siret_number VARCHAR(14),
-    rc_number VARCHAR(14),
-    fishing_log INT,
-    FOREIGN KEY (fishing_log) REFERENCES fishing_logs(id)
+    rc_number VARCHAR(14)
 );
 
 -- Table Boats
 CREATE TABLE boats (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    boat_type ENUM('open', 'cabine', 'catamaran', 'voilier', 'jet-ski', 'canoe'),
+    boat_type VARCHAR(255),
     picture VARCHAR(255),
-    licence_type ENUM('cotier', 'fluvial'),
+    licence_type VARCHAR(255),
     bail DECIMAL(10, 2),
     max_capacity INT,
     city VARCHAR(100),
@@ -51,17 +46,17 @@ CREATE TABLE boats (
     longitude2 FLOAT,
     latitude1 FLOAT,
     latitude2 FLOAT,
-    motor_type ENUM('diesel', 'essence', 'aucun'),
+    motor_type VARCHAR(255),
     motor_power INT
 );
 
 -- Table Trips
 CREATE TABLE trips (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     information TEXT,
-    type ENUM('journaliere', 'recurente'),
+    type VARCHAR(255),
     price DECIMAL(10, 2),
-    cost_type ENUM('global', 'par personne'),
+    cost_type VARCHAR(255),
     date DATE,
     time TIME,
     passengers JSON,
@@ -71,27 +66,27 @@ CREATE TABLE trips (
     FOREIGN KEY (organiser) REFERENCES users(id)
 );
 
--- Table Reservations
-CREATE TABLE reservations (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    price DECIMAL(10, 2),
-    nb_places INT,
-    trip INT,
-    organiser INT,
-    FOREIGN KEY (trip) REFERENCES fishing_trips(id),
-    FOREIGN KEY (organiser) REFERENCES users(id)
-);
-
 -- Table FishingLogs
 CREATE TABLE fishing_logs (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY,
     fish_name VARCHAR(100),
     picture VARCHAR(255),
     comment TEXT,
     height INT,
     weight INT,
     owner INT,
-    FOREIGN KEY (ownerId) REFERENCES users(id)
+    FOREIGN KEY (owner) REFERENCES users(id)
+);
+
+-- Table Reservations
+CREATE TABLE reservations (
+    id INT PRIMARY KEY,
+    price DECIMAL(10, 2),
+    nb_places INT,
+    trip INT,
+    organiser INT,
+    FOREIGN KEY (trip) REFERENCES trips(id),
+    FOREIGN KEY (organiser) REFERENCES users(id)
 );
 
 -- Relational Tables for Users
@@ -108,7 +103,7 @@ CREATE TABLE user_trips (
     trip_id INT,
     PRIMARY KEY(user_id, trip_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (trip_id) REFERENCES fishing_trips(id)
+    FOREIGN KEY (trip_id) REFERENCES trips(id)
 );
 
 CREATE TABLE user_reservations (
@@ -125,6 +120,14 @@ CREATE TABLE user_languages (
     PRIMARY KEY(user_id, language_id),
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (language_id) REFERENCES languages(id)
+);
+
+CREATE TABLE user_logs (
+    user_id INT,
+    log_id INT,
+    PRIMARY KEY(user_id, log_id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (log_id) REFERENCES fishing_logs(id)
 );
 
 -- Relational Tables for Boats
