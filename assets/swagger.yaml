@@ -588,12 +588,12 @@ components:
         id:
           type: integer
           description: Identifiant unique de l'utilisateur
-        surname:
-          type: string
-          description: Nom de l'utilisateur
         firstname:
           type: string
           description: Prénom de l'utilisateur
+        lastname:
+          type: string
+          description: Nom de famille de l'utilisateur
         birthday:
           type: string
           format: date
@@ -672,6 +672,9 @@ components:
         id:
           type: integer
           description: Identifiant unique du bateau
+        owner:
+          type: integer
+          description: Identifiant du propriétaire du bateau
         name:
           type: string
           description: Nom du bateau
