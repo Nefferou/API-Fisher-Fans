@@ -42,10 +42,8 @@ CREATE TABLE boats (
     bail DECIMAL(10, 2),
     max_capacity INT,
     city VARCHAR(100),
-    longitude1 FLOAT,
-    longitude2 FLOAT,
-    latitude1 FLOAT,
-    latitude2 FLOAT,
+    longitude FLOAT,
+    latitude FLOAT,
     motor_type VARCHAR(255),
     motor_power INT
 );
