@@ -1,3 +1,19 @@
+-- Supprimer les tables si elles existent
+DROP TABLE IF EXISTS user_boats CASCADE;
+DROP TABLE IF EXISTS user_trips CASCADE;
+DROP TABLE IF EXISTS user_reservations CASCADE;
+DROP TABLE IF EXISTS user_languages CASCADE;
+DROP TABLE IF EXISTS user_logs CASCADE;
+DROP TABLE IF EXISTS boat_equipments CASCADE;
+DROP TABLE IF EXISTS trip_passengers CASCADE;
+DROP TABLE IF EXISTS fishing_logs CASCADE;
+DROP TABLE IF EXISTS reservations CASCADE;
+DROP TABLE IF EXISTS trips CASCADE;
+DROP TABLE IF EXISTS boats CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS languages CASCADE;
+DROP TABLE IF EXISTS equipments CASCADE;
+
 -- Table Equipments
 CREATE TABLE equipments (
     id INT PRIMARY KEY,
@@ -27,8 +43,8 @@ CREATE TABLE users (
     activity_type VARCHAR(100),
     boat_license VARCHAR(50),
     insurance_number VARCHAR(50),
-    siret_number VARCHAR(14),
-    rc_number VARCHAR(14)
+    siret_number VARCHAR(20),
+    rc_number VARCHAR(20)
 );
 
 -- Table Boats
