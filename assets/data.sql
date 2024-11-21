@@ -1,11 +1,11 @@
--- Insertion des équipements
+-- Insérer des équipements de bateau
 INSERT INTO equipments (id, name) VALUES
-(1, 'VHF Radio'),
-(2, 'GPS'),
-(3, 'Fish Finder'),
-(4, 'Life Jackets'),
-(5, 'Anchor'),
-(6, 'Oars');
+(1, 'sondeur'),
+(2, 'vivier'),
+(3, 'échelle'),
+(4, 'GPS'),
+(5, 'portecannes'),
+(6, 'radio VHF');
 
 -- Insertion des langues
 INSERT INTO languages (id, name) VALUES
