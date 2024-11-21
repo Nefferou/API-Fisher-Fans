@@ -8,6 +8,9 @@ servers:
   - url: https://localhost:3000
     description: Serveur local sécurisé pour les tests de développement.
 
+security:
+  - bearerAuth: []
+
 tags:
   - name: users
     description: Gestion des utilisateurs
@@ -33,17 +36,26 @@ paths:
           schema:
             type: string
           description: Filtrer les utilisateurs par nom
+        - $ref: '#/components/parameters/PaginationPage'
+        - $ref: '#/components/parameters/PaginationLimit'
       responses:
         '200':
           description: Liste des utilisateurs récupérée avec succès
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/User'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
     post:
@@ -61,6 +73,8 @@ paths:
           description: Utilisateur créé avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '409':
           description: Conflit, l'utilisateur existe déjà
         '500':
@@ -85,6 +99,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/User'
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Utilisateur non trouvé
         '500':
@@ -111,6 +129,8 @@ paths:
           description: Utilisateur mis à jour avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Utilisateur non trouvé
         '500':
@@ -129,6 +149,10 @@ paths:
       responses:
         '204':
           description: Utilisateur supprimé avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Utilisateur non trouvé
         '500':
@@ -146,17 +170,48 @@ paths:
           schema:
             type: integer
           description: ID du propriétaire pour filtrer les bateaux
+        - name: minLatitude
+          in: query
+          required: false
+          schema:
+            type: float
+          description: Latitude minimale pour filtrer les bateaux par zone géographique
+        - name: maxLatitude
+          in: query
+          required: false
+          schema:
+              type: float
+          description: Latitude maximale pour filtrer les bateaux par zone géographique
+        - name: minLongitude
+          in: query
+          required: false
+          schema:
+              type: float
+          description: Longitude minimale pour filtrer les bateaux par zone géographique
+        - name: maxLongitude
+          in: query
+          required: false
+          schema:
+              type: float
+          description: Longitude maximale pour filtrer les bateaux par zone géographique
       responses:
         '200':
           description: Liste des bateaux récupérée avec succès
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Boat'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Boat'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
     post:
@@ -174,6 +229,10 @@ paths:
           description: Bateau créé avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
+        '403':
+          description: Pas de permis bateau valide
         '500':
           description: Erreur serveur
 
@@ -196,6 +255,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Boat'
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Bateau non trouvé récupérés avec succès
         '500':
@@ -221,11 +284,13 @@ paths:
         '200':
           description: Bateau mis à jour avec succès
         '400':
-            description: Requête invalide
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
-            description: Bateau non trouvé
+          description: Bateau non trouvé
         '500':
-            description: Erreur serveur
+          description: Erreur serveur
     delete:
       tags:
         - boats
@@ -240,10 +305,14 @@ paths:
       responses:
         '204':
           description: Bateau supprimé avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
-            description: Bateau non trouvé
+          description: Bateau non trouvé
         '500':
-            description: Erreur serveur
+          description: Erreur serveur
 
   /v1/trips:
     get:
@@ -258,17 +327,38 @@ paths:
             type: string
             format: date
           description: Filtrer les sorties de pêche par date
+        - name: organizerId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filtrer par organisateur
+        - name: boatId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: Filtrer par bateau
+        - $ref: '#/components/parameters/PaginationPage'
+        - $ref: '#/components/parameters/PaginationLimit'
       responses:
         '200':
           description: Liste des sorties de pêche récupérée avec succès
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/FishingTrip'
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/FishingTrip'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
     post:
@@ -286,6 +376,10 @@ paths:
           description: Sortie de pêche créée avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
+        '403':
+          description: Pas de bateau disponible
         '500':
           description: Erreur serveur
 
@@ -308,6 +402,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FishingTrip'
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Sortie non trouvée
         '500':
@@ -334,6 +432,8 @@ paths:
           description: Sortie de pêche mise à jour avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Sortie non trouvée
     delete:
@@ -350,6 +450,10 @@ paths:
       responses:
         '204':
           description: Sortie de pêche supprimée avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Sortie non trouvée
         '500':
@@ -378,6 +482,8 @@ paths:
                   $ref: '#/components/schemas/Reservation'
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
     post:
@@ -395,6 +501,8 @@ paths:
           description: Réservation créée avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
 
@@ -417,6 +525,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Reservation'
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Réservation non trouvée
         '500':
@@ -443,6 +555,8 @@ paths:
           description: Réservation mise à jour avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Réservation non trouvée
     delete:
@@ -459,6 +573,10 @@ paths:
       responses:
         '204':
           description: Réservation supprimée avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
         '404':
           description: Réservation non trouvée
         '500':
@@ -487,6 +605,8 @@ paths:
                   $ref: '#/components/schemas/FishingLog'
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
     post:
@@ -504,11 +624,60 @@ paths:
           description: Carnet de pêche ajouté avec succès
         '400':
           description: Requête invalide
+        '401':
+          description: Non authentifié
         '500':
           description: Erreur serveur
 
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  parameters:
+    PaginationPage:
+      name: page
+      in: query
+      description: Numéro de la page à retourner
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    PaginationLimit:
+      name: limit
+      in: query
+      description: Nombre d'éléments par page
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
   schemas:
+    Pagination:
+      type: object
+      properties:
+        total:
+          type: integer
+          description: Nombre total d'éléments
+        page:
+          type: integer
+          description: Page courante
+        pageSize:
+          type: integer
+          description: Nombre d'éléments par page
+        totalPages:
+          type: integer
+          description: Nombre total de pages
+        hasNextPage:
+          type: boolean
+          description: Indique s'il y a une page suivante
+        hasPrevPage:
+          type: boolean
+          description: Indique s'il y a une page précédente
+
     User:
       type: object
       properties:
