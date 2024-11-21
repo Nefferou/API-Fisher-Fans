@@ -1,15 +1,20 @@
 const express = require('express');
-const fishingLogsController = require('../controllers/fishingLogsController');
-
 const router = express.Router();
+const fishingLogController = require('../controllers/fishingLogsController');
 
-// Récupérer tous les logs de pêche
-router.get('/', fishingLogsController.getFishingLogs);
+// Route pour créer un carnet de pêche
+router.post('/', fishingLogController.createLog);
 
-// Récupérer un log de pêche par son id
-router.get('/:id', fishingLogsController.getFishingLog);
+// Route pour mettre à jour un carnet de pêche par ID
+router.put('/:id', fishingLogController.updateLog);
 
-// Créer un log de pêche
-router.post('/', fishingLogsController.createFishingLog);
+// Route pour supprimer un carnet de pêche par ID
+router.delete('/:id', fishingLogController.deleteLog);
 
-module.exports = router ;
+// Route pour obtenir un carnet de pêche par ID
+router.get('/:id', fishingLogController.getLog);
+
+// Route pour obtenir tous les carnets de pêche
+router.get('/', fishingLogController.getAllLogs);
+
+module.exports = router;

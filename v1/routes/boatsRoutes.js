@@ -1,21 +1,20 @@
 const express = require('express');
-const boatsController = require('../controllers/boatsController');
-
 const router = express.Router();
+const boatController = require('../controllers/boatsController');
 
-// Récupérer tous les bateaux
-router.get('/', boatsController.getBoats);
+// Route pour créer un bateau
+router.post('/', boatController.createBoat);
 
-// Récupérer les détails d'un bateau
-router.post('/', boatsController.createBoat);
+// Route pour mettre à jour un bateau par ID
+router.put('/:id', boatController.updateBoat);
 
-// Créer un bateau
-router.get('/:id', boatsController.getBoat);
+// Route pour supprimer un bateau par ID
+router.delete('/:id', boatController.deleteBoat);
 
-// Mettre à jour un bateau
-router.put('/:id', boatsController.updateBoat);
+// Route pour obtenir un bateau par ID
+router.get('/:id', boatController.getBoat);
 
-// Supprimer un bateau
-router.delete('/:id', boatsController.deleteBoat);
+// Route pour obtenir tous les bateaux
+router.get('/', boatController.getAllBoats);
 
-module.exports = router ;
+module.exports = router;

@@ -1,27 +1,59 @@
 const FishingTrip = require('../models/fishingTripModel');
 
-exports.getFishingTrips = async (req, res) => {
-    const fishingTrips = await FishingTrip.find();
-    res.json(fishingTrips);
-}
+exports.createTrip = async (req, res) => {
+    try {
+        const newTrip = await FishingTrip.createTrip(req.body);
+        res.status(201).json(newTrip);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la création de la sortie de pêche');
+    }
+};
 
-exports.getFishingTrip = async (req, res) => {
-    const fishingTrip = await FishingTrip.findById(req.params.id);
-    res.json(fishingTrip);
-}
+exports.updateTrip = async (req, res) => {
+    try {
+        const updatedTrip = await FishingTrip.updateTrip(req.params.id, req.body);
+        res.json(updatedTrip);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la mise à jour de la sortie de pêche');
+    }
+};
 
-exports.createFishingTrip = async (req, res) => {
-    const newFishingTrip = new FishingTrip(req.body);
-    await newFishingTrip.save();
-    res.status(201).send('Sortie de pêche créée');
-}
+exports.deleteTrip = async (req, res) => {
+    try {
+        const deletedTrip = await FishingTrip.deleteTrip(req.params.id);
+        if (deletedTrip) {
+            res.status(204).send();
+        } else {
+            res.status(404).send('Sortie de pêche non trouvée');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la suppression de la sortie de pêche');
+    }
+};
 
-exports.updateFishingTrip = async (req, res) => {
-    const fishingTrip = await FishingTrip.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(fishingTrip);
-}
+exports.getTrip = async (req, res) => {
+    try {
+        const trip = await FishingTrip.getTrip(req.params.id);
+        if (!trip) {
+            res.status(404).send('Sortie de pêche non trouvée');
+        } else {
+            res.json(trip);
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la récupération de la sortie de pêche');
+    }
+};
 
-exports.deleteFishingTrip = async (req, res) => {
-    await FishingTrip.findByIdAndDelete(req.params.id);
-    res.status(204).send();
-}
+exports.getAllTrips = async (req, res) => {
+    try {
+        const trips = await FishingTrip.getAllTrips();
+        res.json(trips);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la récupération des sorties de pêche');
+    }
+};
