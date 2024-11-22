@@ -40,7 +40,16 @@ exports.getUser = async (req, res) => {
 
 exports.getAllUsers = async (req, res) => {
     try {
-        const users = await User.getAllUsers();
+        // get query params
+        const { lastname, city, postal_code, status, activity_type } = req.query;
+        const filters = { lastname, city, postal_code, status, activity_type };
+
+        // remove undefined filters
+        const filteredFilters = Object.fromEntries(
+            Object.entries(filters).filter(([_, value]) => value !== undefined)
+        );
+
+        const users = await User.getAllUsers(filteredFilters);
         res.json(users);
     } catch (err) {
         console.error(err);

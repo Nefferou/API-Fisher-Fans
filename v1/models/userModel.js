@@ -36,8 +36,24 @@ const User = {
         return result.rows[0];
     },
 
-    getAllUsers: async () => {
-        const result = await pool.query('SELECT * FROM users');
+    getAllUsers: async (filters) => {
+        // Base query
+        let query = 'SELECT * FROM users';
+        const values = [];
+        const conditions = [];
+
+        // add WHERE conditions based on filters
+        Object.entries(filters).forEach(([key, value], index) => {
+            conditions.push(`${key} = $${index + 1}`);
+            values.push(value);
+        });
+
+        if (conditions.length > 0) {
+            query += ` WHERE ${conditions.join(' AND ')}`;
+        }
+
+        // Execute the query
+        const result = await pool.query(query, values);
         return result.rows;
     }
 };

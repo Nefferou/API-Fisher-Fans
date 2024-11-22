@@ -5,7 +5,7 @@ info:
   version: 3.0.0
   
 servers:
-  - url: https://localhost:3000
+  - url: https://localhost:3000/api
     description: Serveur local sécurisé pour les tests de développement.
 
 security:
@@ -104,13 +104,35 @@ paths:
       summary: Récupérer tous les utilisateurs
       parameters:
         - in: query
-          name: surname
+          name: lastname
           required: false
           schema:
             type: string
           description: Filtrer les utilisateurs par nom
-        - $ref: '#/components/parameters/PaginationPage'
-        - $ref: '#/components/parameters/PaginationLimit'
+        - in: query
+          name: postal_code
+          required: false
+          schema:
+            type: string
+          description: Filtrer les utilisateurs par code postal
+        - in : query
+          name: city
+          required: false
+          schema:
+            type: string
+          description: Filtrer les utilisateurs par ville
+        - in: query
+          name: status
+          required: false
+          schema:
+              type: string
+          description: Filtrer les utilisateurs par statut
+        - in: query
+          name: activity_type
+          required: false
+          schema:
+              type: string
+          description: Filtrer les utilisateurs par type d'activité
       responses:
         '200':
           description: Liste des utilisateurs récupérée avec succès
@@ -123,8 +145,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/User'
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
         '401':
@@ -279,8 +299,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Boat'
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
         '401':
@@ -412,8 +430,6 @@ paths:
           schema:
             type: integer
           description: Filtrer par bateau
-        - $ref: '#/components/parameters/PaginationPage'
-        - $ref: '#/components/parameters/PaginationLimit'
       responses:
         '200':
           description: Liste des sorties de pêche récupérée avec succès
@@ -426,8 +442,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/FishingTrip'
-                  pagination:
-                    $ref: '#/components/schemas/Pagination'
         '400':
           description: Requête invalide
         '401':
@@ -709,47 +723,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
-  parameters:
-    PaginationPage:
-      name: page
-      in: query
-      description: Numéro de la page à retourner
-      schema:
-        type: integer
-        minimum: 1
-        default: 1
-    PaginationLimit:
-      name: limit
-      in: query
-      description: Nombre d'éléments par page
-      schema:
-        type: integer
-        minimum: 1
-        maximum: 100
-        default: 20
-
   schemas:
-    Pagination:
-      type: object
-      properties:
-        total:
-          type: integer
-          description: Nombre total d'éléments
-        page:
-          type: integer
-          description: Page courante
-        pageSize:
-          type: integer
-          description: Nombre d'éléments par page
-        totalPages:
-          type: integer
-          description: Nombre total de pages
-        hasNextPage:
-          type: boolean
-          description: Indique s'il y a une page suivante
-        hasPrevPage:
-          type: boolean
-          description: Indique s'il y a une page précédente
 
     User:
       type: object
