@@ -1,15 +1,5 @@
 const User = require('../models/userModel');
 
-exports.createUser = async (req, res) => {
-    try {
-        const newUser = await User.createUser(req.body);
-        res.status(201).json(newUser);
-    } catch (err) {
-        console.error(err);
-        res.status(500).send('Erreur lors de la création de l\'utilisateur');
-    }
-};
-
 // Mettre à jour un utilisateur
 exports.updateUser = async (req, res) => {
     try {

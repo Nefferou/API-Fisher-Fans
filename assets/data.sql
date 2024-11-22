@@ -15,12 +15,12 @@ INSERT INTO languages (id, name) VALUES
 (4, 'German');
 
 -- Insertion des utilisateurs
-INSERT INTO users (id, firstname, lastname, email, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number) VALUES
-(1, 'John', 'Doe', 'john.doe@example.com', '1985-06-15', '123-456-7890', '123 Elm St', '75001', 'Paris', 'john_doe.jpg', 'active', 'Doe Fishing Inc.', 'Fishing Guide', 'B', 'INS1234567890', 'SIRET12345678901234', 'RC1234567890'),
-(2, 'Jane', 'Smith', 'jane.smith@example.com', '1990-11-25', '098-765-4321', '456 Oak St', '75002', 'Paris', 'jane_smith.jpg', 'active', 'Smith Adventures', 'Tourism', 'C', 'INS0987654321', 'SIRET23456789012345', 'RC2345678901'),
-(3, 'Alice', 'Johnson', 'alice.johnson@example.com', '1987-02-10', '321-654-9870', '789 Pine St', '75003', 'Paris', 'alice_johnson.jpg', 'active', 'Alice Tours', 'Tourism', 'B', 'INS1122334455', 'SIRET34567890123456', 'RC3456789012'),
-(4, 'Bob', 'Williams', 'bob.williams@example.com', '1975-05-30', '456-789-0123', '101 Maple St', '75004', 'Paris', 'bob_williams.jpg', 'inactive', 'Williams Sailing', 'Fishing Guide', 'A', 'INS2233445566', 'SIRET45678901234567', 'RC4567890123'),
-(5, 'Eve', 'Davis', 'eve.davis@example.com', '1992-07-20', '567-890-1234', '202 Birch St', '75005', 'Paris', 'eve_davis.jpg', 'active', 'Eve Adventure Co.', 'Fishing', 'C', 'INS3344556677', 'SIRET56789012345678', 'RC5678901234');
+INSERT INTO users (firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number) VALUES
+('John', 'Doe', 'john.doe@example.com', '$2y$10$aecpEONBxPmWTVhOgwbjHuightdnCUd7Nmzt5PAW5WZJdbaU/fJ0W', '1985-06-15', '123-456-7890', '123 Elm St', '75001', 'Paris', 'john_doe.jpg', 'active', 'Doe Fishing Inc.', 'Fishing Guide', 'B', 'INS1234567890', 'SIRET12345678901234', 'RC1234567890'),
+('Jane', 'Smith', 'jane.smith@example.com', '$2y$10$NdtjZ8QRiZGBL2uYcHJ1We0bZGrtwXxY9mHXT11vqXILwVyDA9c1K', '1990-11-25', '098-765-4321', '456 Oak St', '75002', 'Paris', 'jane_smith.jpg', 'active', 'Smith Adventures', 'Tourism', 'C', 'INS0987654321', 'SIRET23456789012345', 'RC2345678901'),
+('Alice', 'Johnson', 'alice.johnson@example.com', '$2y$10$7mMlzPKIXpjX8vYgwhyHmOnb2cIzhvLNSvtpDfCTSQG5SU8DB9n16', '1987-02-10', '321-654-9870', '789 Pine St', '75003', 'Paris', 'alice_johnson.jpg', 'active', 'Alice Tours', 'Tourism', 'B', 'INS1122334455', 'SIRET34567890123456', 'RC3456789012'),
+('Bob', 'Williams', 'bob.williams@example.com', '$2y$10$ZBEHbhLC0mvdNuCj0hWB3.GiWgA6F3sDJg4UOC0BcTUwVCVH.nt7y', '1975-05-30', '456-789-0123', '101 Maple St', '75004', 'Paris', 'bob_williams.jpg', 'inactive', 'Williams Sailing', 'Fishing Guide', 'A', 'INS2233445566', 'SIRET45678901234567', 'RC4567890123'),
+('Eve', 'Davis', 'eve.davis@example.com', '$2y$10$qn0c3rg9l3I.hBcORX0F8OzMTVzgW.5ZUKBt.vFg0DTP8CwoeP0nq', '1992-07-20', '567-890-1234', '202 Birch St', '75005', 'Paris', 'eve_davis.jpg', 'active', 'Eve Adventure Co.', 'Fishing', 'C', 'INS3344556677', 'SIRET56789012345678', 'RC5678901234');
 
 -- Insertion des bateaux
 INSERT INTO boats (id, name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power) VALUES
