@@ -1,12 +1,23 @@
 const express = require('express');
 const dotenv = require('dotenv');
-dotenv.config();
-const app = express();
-const port = process.env.PORT || 3000;
+const fs = require('fs');
+const https = require('https');
 
-// Import Middleware
-app.use(express.json());
+const app = express();
+const port = process.env.API_PORT || 3000;
+
+dotenv.config();
+
+// Import Middlewares
 const { authenticate } = require('./authMiddleware');
+app.use(express.json());
+
+// SSL credentials for HTTPS
+const credentials = {
+    key: fs.readFileSync(process.env.SSL_KEY_PATH),
+    cert: fs.readFileSync(process.env.SSL_CERT_PATH),
+    passphrase: process.env.SSL_PASSPHRASE
+};
 
 // Import V1 Routes
 const v1AuthRoutes = require('./v1/routes/authRoutes');
@@ -24,6 +35,6 @@ app.use('/api/v1/fishingTrips', authenticate, v1FishingTripsRoutes);
 app.use('/api/v1/reservations', authenticate, v1ReservationsRoutes);
 app.use('/api/v1/fishingLogs', authenticate, v1FishingLogsRoutes);
 
-app.listen(port, () => {
-    console.log(`API démarrée sur http://localhost:${port}`);
+https.createServer(credentials, app).listen(port, () => {
+    console.log(`API started on the port: ${port}`);
 });
