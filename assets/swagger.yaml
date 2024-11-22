@@ -12,6 +12,8 @@ security:
   - bearerAuth: []
 
 tags:
+  - name: auth
+    description: Gestion de l'authentification
   - name: users
     description: Gestion des utilisateurs
   - name: boats
@@ -24,6 +26,77 @@ tags:
     description: Gestion des réservations
 
 paths:
+  /v1/auth/login:
+    post:
+      tags:
+        - auth
+      summary: Connexion d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  description: Adresse email de l'utilisateur
+                password:
+                  type: string
+                  description: Mot de passe de l'utilisateur
+      responses:
+        '200':
+          description: Connexion réussie
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                    description: Token d'authentification
+                  user:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                        description: Identifiant unique de l'utilisateur
+                      email:
+                        type: string
+                        format: email
+                        description: Adresse email de l'utilisateur
+                      firstname:
+                        type: string
+                        description: Prénom de l'utilisateur
+        '400':
+          description: Requête invalide
+        '401':
+          description: Identifiants invalides
+        '500':
+          description: Erreur serveur
+
+  /v1/auth/register:
+    post:
+      tags:
+        - auth
+      summary: Inscription d'un utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '201':
+          description: Utilisateur créé avec succès
+        '400':
+          description: Requête invalide
+        '409':
+          description: Conflit, l'utilisateur existe déjà
+        '500':
+          description: Erreur serveur
+
   /v1/users:
     get:
       tags:
@@ -698,6 +771,9 @@ components:
           type: string
           format: email
           description: Adresse email de l'utilisateur
+        password:
+          type: string
+          description: Mot de passe de l'utilisateur
         tel:
           type: string
           description: Numéro de téléphone de l'utilisateur
@@ -882,6 +958,7 @@ components:
         organiser:
           type: integer
           description: Identifiant de l'organisateur de la réservation
+
     FishingLog:
       type: object
       required:
