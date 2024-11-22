@@ -2,19 +2,19 @@ const express = require('express');
 const router = express.Router();
 const fishingTripController = require('../controllers/fishingTripsController');
 
-// Route pour créer une sortie de pêche
+// Route to create a fishing trip
 router.post('/', fishingTripController.createTrip);
 
-// Route pour mettre à jour une sortie de pêche par ID
+// Route to update a fishing trip by ID
 router.put('/:id', fishingTripController.updateTrip);
 
-// Route pour supprimer une sortie de pêche par ID
+// Route to delete a fishing trip by ID
 router.delete('/:id', fishingTripController.deleteTrip);
 
-// Route pour obtenir une sortie de pêche par ID
+// Route to get a fishing trip by ID
 router.get('/:id', fishingTripController.getTrip);
 
-// Route pour obtenir toutes les sorties de pêche
+// Route to get all fishing trips
 router.get('/', fishingTripController.getAllTrips);
 
 module.exports = router;

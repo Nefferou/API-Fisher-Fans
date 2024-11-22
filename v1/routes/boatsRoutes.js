@@ -2,19 +2,19 @@ const express = require('express');
 const router = express.Router();
 const boatController = require('../controllers/boatsController');
 
-// Route pour créer un bateau
+// Route to create a boat
 router.post('/', boatController.createBoat);
 
-// Route pour mettre à jour un bateau par ID
+// Route to update a boat by ID
 router.put('/:id', boatController.updateBoat);
 
-// Route pour supprimer un bateau par ID
+// Route to delete a boat by ID
 router.delete('/:id', boatController.deleteBoat);
 
-// Route pour obtenir un bateau par ID
+// Route to get a boat by ID
 router.get('/:id', boatController.getBoat);
 
-// Route pour obtenir tous les bateaux
+// Route to get all boats
 router.get('/', boatController.getAllBoats);
 
 module.exports = router;

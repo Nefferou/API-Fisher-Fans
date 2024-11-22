@@ -1,6 +1,5 @@
 const User = require('../models/userModel');
 
-// Mettre à jour un utilisateur
 exports.updateUser = async (req, res) => {
     try {
         const updatedUser = await User.updateUser(req.params.id, req.body);
@@ -11,7 +10,6 @@ exports.updateUser = async (req, res) => {
     }
 };
 
-// Supprimer un utilisateur
 exports.deleteUser = async (req, res) => {
     try {
         const deletedUser = await User.deleteUser(req.params.id);
@@ -26,7 +24,6 @@ exports.deleteUser = async (req, res) => {
     }
 };
 
-// Obtenir un utilisateur par ID
 exports.getUser = async (req, res) => {
     try {
         const user = await User.getUser(req.params.id);
@@ -41,7 +38,6 @@ exports.getUser = async (req, res) => {
     }
 };
 
-// Obtenir tous les utilisateurs
 exports.getAllUsers = async (req, res) => {
     try {
         const users = await User.getAllUsers();

@@ -2,19 +2,19 @@ const express = require('express');
 const router = express.Router();
 const fishingLogController = require('../controllers/fishingLogsController');
 
-// Route pour créer un carnet de pêche
+// Route to create a fishing log
 router.post('/', fishingLogController.createLog);
 
-// Route pour mettre à jour un carnet de pêche par ID
+// Route to update a fishing log by ID
 router.put('/:id', fishingLogController.updateLog);
 
-// Route pour supprimer un carnet de pêche par ID
+// Route to delete a fishing log by ID
 router.delete('/:id', fishingLogController.deleteLog);
 
-// Route pour obtenir un carnet de pêche par ID
+// Route to get a fishing log by ID
 router.get('/:id', fishingLogController.getLog);
 
-// Route pour obtenir tous les carnets de pêche
+// Route to get all fishing logs
 router.get('/', fishingLogController.getAllLogs);
 
 module.exports = router;
