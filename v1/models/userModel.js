@@ -22,7 +22,29 @@ const User = {
     },
 
     deleteUser: async (id) => {
-        const result = await pool.query('DELETE FROM users WHERE id = $1', [id]);
+        const query = `
+        UPDATE users
+        SET
+            firstname = '***',
+            lastname = '***',
+            email = CONCAT('deleted_', id, '@example.com'),
+            password = '***',
+            birthday = '9000-01-01',
+            tel = '***',
+            address = '***',
+            postal_code = '***',
+            city = '***',
+            profile_picture = '***',
+            society_name = '***',
+            boat_license = '***',
+            insurance_number = '***',
+            siret_number = '***',
+            rc_number = '***'
+        WHERE
+            id = $1
+        `;
+
+        const result = await pool.query(query, [id]);
         return result.rowCount;
     },
 

@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/usersController');
 
-// Route to create a new user
+// Route to update a new user
 router.put('/:id', userController.updateUser);
 
 // Route to delete a user by ID
