@@ -24,6 +24,16 @@ exports.updateUser = async (req, res) => {
     }
 };
 
+exports.patchUser = async (req, res) => {
+    try {
+        const patchedUser = await User.patchUser(req.params.id, req.body);
+        res.json(patchedUser);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la mise à jour de l\'utilisateur');
+    }
+}
+
 exports.deleteUser = async (req, res) => {
     try {
         const deletedUser = await User.deleteUser(req.params.id);

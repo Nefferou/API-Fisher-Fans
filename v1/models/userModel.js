@@ -13,13 +13,26 @@ const User = {
     },
 
     updateUser: async (id, data) => {
-        const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number } = data;
+        const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
             `UPDATE users SET firstname = $1, lastname = $2, email = $3, password = $4, birthday = $5, tel = $6, address = $7, postal_code = $8, city = $9, profile_picture = $10, status = $11, society_name = $12, activity_type = $13, boat_license = $14, insurance_number = $15, siret_number = $16, rc_number = $17
              WHERE id = $18 RETURNING *`,
             [firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, id]
         );
-        await User.associateSpokenLanguages(result.rows[0].id, data.spokenLanguages);
+        await User.associateSpokenLanguages(result.rows[0].id, spokenLanguages);
+        return result.rows[0];
+    },
+
+    patchUser: async (id, data) => {
+        const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
+        const result = await pool.query(
+            `UPDATE users SET firstname = COALESCE($1, firstname), lastname = COALESCE($2, lastname), email = COALESCE($3, email), password = COALESCE($4, password), birthday = COALESCE($5, birthday), tel = COALESCE($6, tel), address = COALESCE($7, address), postal_code = COALESCE($8, postal_code), city = COALESCE($9, city), profile_picture = COALESCE($10, profile_picture), status = COALESCE($11, status), society_name = COALESCE($12, society_name), activity_type = COALESCE($13, activity_type), boat_license = COALESCE($14, boat_license), insurance_number = COALESCE($15, insurance_number), siret_number = COALESCE($16, siret_number), rc_number = COALESCE($17, rc_number)
+            WHERE id = $18 RETURNING *`,
+            [firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, id]
+        );
+        const languages = spokenLanguages ? spokenLanguages : [];
+        await User.associateSpokenLanguages(result.rows[0].id, languages);
+        result.rows[0].spokenLanguages = spokenLanguages;
         return result.rows[0];
     },
 
@@ -105,6 +118,9 @@ const User = {
     },
 
     associateSpokenLanguages: async (userId, spokenLanguages) => {
+        // Delete the existing associations
+        await pool.query('DELETE FROM user_languages WHERE user_id = $1', [userId]);
+
         // Fetch the language ids
         const languageIds = [];
         for (const language of spokenLanguages) {

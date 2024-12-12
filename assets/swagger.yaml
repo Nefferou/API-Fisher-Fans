@@ -228,6 +228,34 @@ paths:
           description: Utilisateur non trouvé
         '500':
           description: Erreur serveur
+    patch:
+      tags:
+          - users
+      summary: Mettre à jour partiellement un utilisateur par son ID
+      parameters:
+          - in: path
+            name: userId
+            required: true
+            schema:
+                type: string
+            description: ID unique de l'utilisateur
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Utilisateur mis à jour avec succès
+        '400':
+         description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+         description: Utilisateur non trouvé
+        '500':
+          description: Erreur serveur
     delete:
       tags:
         - users
