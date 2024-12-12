@@ -2,12 +2,13 @@ const pool = require('../../dbConfig');
 
 const User = {
     createUser: async (data) => {
-        const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number } = data;
+        const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
             `INSERT INTO users (firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17) RETURNING *`,
             [firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number]
         );
+        await User.associateSpokenLanguages(result.rows[0].id, spokenLanguages);
         return result.rows[0];
     },
 
@@ -18,6 +19,7 @@ const User = {
              WHERE id = $18 RETURNING *`,
             [firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, id]
         );
+        await User.associateSpokenLanguages(result.rows[0].id, data.spokenLanguages);
         return result.rows[0];
     },
 
@@ -45,11 +47,22 @@ const User = {
         `;
 
         const result = await pool.query(query, [id]);
+        await pool.query('DELETE FROM user_languages WHERE user_id = $1', [id]);
         return result.rowCount;
     },
 
     getUser: async (id) => {
         const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+
+        // Fetch the spoken languages
+        const languageIds = await pool.query('SELECT language_id FROM user_languages WHERE user_id = $1', [id]);
+        const spokenLanguages = [];
+        for (const languageId of languageIds.rows) {
+            const language = await pool.query('SELECT name FROM languages WHERE id = $1', [languageId.language_id]);
+            spokenLanguages.push(language.rows[0].name);
+        }
+        result.rows[0].spokenLanguages = spokenLanguages;
+
         return result.rows[0];
     },
 
@@ -76,7 +89,33 @@ const User = {
 
         // Execute the query
         const result = await pool.query(query, values);
+
+        // Fetch the spoken languages
+        for (const user of result.rows) {
+            const languageIds = await pool.query('SELECT language_id FROM user_languages WHERE user_id = $1', [user.id]);
+            const spokenLanguages = [];
+            for (const languageId of languageIds.rows) {
+                const language = await pool.query('SELECT name FROM languages WHERE id = $1', [languageId.language_id]);
+                spokenLanguages.push(language.rows[0].name);
+            }
+            user.spokenLanguages = spokenLanguages;
+        }
+
         return result.rows;
+    },
+
+    associateSpokenLanguages: async (userId, spokenLanguages) => {
+        // Fetch the language ids
+        const languageIds = [];
+        for (const language of spokenLanguages) {
+            const result = await pool.query('SELECT id FROM languages WHERE name = $1', [language]);
+            languageIds.push(result.rows[0].id);
+        }
+
+        // Associate the languages with the user
+        for (const languageId of languageIds) {
+            await pool.query('INSERT INTO user_languages (user_id, language_id) VALUES ($1, $2)', [userId, languageId]);
+        }
     }
 };
 

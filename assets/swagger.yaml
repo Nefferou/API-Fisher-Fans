@@ -728,9 +728,6 @@ components:
     User:
       type: object
       properties:
-        id:
-          type: integer
-          description: Identifiant unique de l'utilisateur
         firstname:
           type: string
           description: Prénom de l'utilisateur
@@ -790,34 +787,10 @@ components:
         rc_number:
           type: string
           description: Numéro de RC de l'utilisateur
-        fishing_log:
-          type: integer
-          description: URL du carnet de pêche de l'utilisateur
-        boat_list:
-          type: array
-          description: Liste des bateaux de l'utilisateur
-          items:
-            type: integer
-            description: Identifiant du bateau
-        fishing_trip_list:
-          type: array
-          description: Liste des sorties de pêche de l'utilisateur
-          items:
-            type: integer
-            description: Identifiant de la sortie de pêche
-        reservation_list:
-          type: array
-          description: Liste des réservations de l'utilisateur
-          items:
-            type: integer
-            description: Identifiant de la réservation
 
     Boat:
       type: object
       properties:
-        id:
-          type: integer
-          description: Identifiant unique du bateau
         owner:
           type: integer
           description: Identifiant du propriétaire du bateau
@@ -830,7 +803,7 @@ components:
         picture:
           type: string
           description: URL de la photo du bateau
-        require_licence_type:
+        licence_type:
           type: string
           enum: [cotier, fluvial]
           description: Type de permis bateau requis
@@ -853,16 +826,10 @@ components:
         city:
           type: string
           description: Ville de stationnement du bateau
-        longitude1:
+        longitude:
           type: float
           description: Coordonnées GPS du bateau
-        longitude2:
-          type: float
-          description: Coordonnées GPS du bateau
-        latitude1:
-          type: float
-          description: Coordonnées GPS du bateau
-        latitude2:
+        latitude:
           type: float
           description: Coordonnées GPS du bateau
         motor_type:
@@ -876,9 +843,6 @@ components:
     FishingTrip:
       type: object
       properties:
-        id:
-          type: integer
-          description: Identifiant unique de la sortie de pêche
         information:
           type: string
           description: Informations complémentaires sur la sortie de pêche
@@ -917,9 +881,6 @@ components:
     Reservation:
       type: object
       properties:
-        id:
-          type: integer
-          description: Identifiant unique de la réservation
         trip:
           type: string
           description: Identifiant de la sortie de pêche réservée
@@ -935,14 +896,7 @@ components:
 
     FishingLog:
       type: object
-      required:
-        - id
-        - ownerId
-        - entries
       properties:
-        id:
-          type: integer
-          description: Identifiant unique du carnet de pêche
         fish_name:
           type: string
           description: Nom du poisson pêché
