@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/usersController');
 
+// Route to create a new user
+router.post('/', userController.createUser);
+
 // Route to update a new user
 router.put('/:id', userController.updateUser);
 

@@ -1,4 +1,18 @@
 const User = require('../models/userModel');
+const bcrypt = require("bcryptjs");
+
+exports.createUser = async (req, res) => {
+    try {
+        const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await User.createUser({ firstname, lastname, email, password: hashedPassword, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number });
+        res.json(user);
+    }
+    catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la création de l\'utilisateur');
+    }
+}
 
 exports.updateUser = async (req, res) => {
     try {
