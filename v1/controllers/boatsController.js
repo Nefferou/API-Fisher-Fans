@@ -20,6 +20,16 @@ exports.updateBoat = async (req, res) => {
     }
 };
 
+exports.patchBoat = async (req, res) => {
+    try {
+        const patchedBoat = await Boat.patchBoat(req.params.id, req.body);
+        res.json(patchedBoat);
+    } catch (err) {
+        console.error(err);
+        res.status(500).send('Erreur lors de la mise à jour du bateau');
+    }
+}
+
 exports.deleteBoat = async (req, res) => {
     try {
         const deletedBoat = await Boat.deleteBoat(req.params.id);

@@ -410,6 +410,34 @@ paths:
           description: Bateau non trouvé
         '500':
           description: Erreur serveur
+    patch:
+      tags:
+        - boats
+      summary: Mettre à jour partiellement un bateau par son ID
+      parameters:
+        - in: path
+          name: boatId
+          required: true
+          schema:
+              type: string
+          description: ID unique du bateau
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Boat'
+      responses:
+        '200':
+          description: Bateau mis à jour avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+          description: Bateau non trouvé
+        '500':
+          description: Erreur serveur
     delete:
       tags:
         - boats
@@ -839,7 +867,7 @@ components:
           type: string
           enum: [open, cabine, catamaran, voilier, jet-ski, canoe]
           description: Type de bateau
-        equipment:
+        equipments:
           type: array
           items:
             type: string

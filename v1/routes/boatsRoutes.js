@@ -8,6 +8,9 @@ router.post('/', boatController.createBoat);
 // Route to update a boat by ID
 router.put('/:id', boatController.updateBoat);
 
+// Route to patch a boat by ID
+router.patch('/:id', boatController.patchBoat);
+
 // Route to delete a boat by ID
 router.delete('/:id', boatController.deleteBoat);
 
