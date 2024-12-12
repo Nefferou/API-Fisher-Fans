@@ -2,6 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const fs = require('fs');
 const https = require('https');
+const YAML = require('yamljs');
+const swaggerUi = require('swagger-ui-express');
 
 const app = express();
 const port = process.env.API_PORT || 3000;
@@ -18,6 +20,10 @@ const credentials = {
     cert: fs.readFileSync(process.env.SSL_CERT_PATH),
     passphrase: process.env.SSL_PASSPHRASE
 };
+
+// Swagger route
+const swaggerDocument = YAML.load('./assets/swagger.yaml');
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Import V1 Routes
 const v1AuthRoutes = require('./v1/routes/authRoutes');
