@@ -30,8 +30,9 @@ const User = {
             WHERE id = $18 RETURNING *`,
             [firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, id]
         );
-        const languages = spokenLanguages ? spokenLanguages : [];
-        await User.associateSpokenLanguages(result.rows[0].id, languages);
+        if (spokenLanguages) {
+            await User.associateSpokenLanguages(result.rows[0].id, spokenLanguages);
+        }
         result.rows[0].spokenLanguages = spokenLanguages;
         return result.rows[0];
     },
@@ -118,8 +119,9 @@ const User = {
     },
 
     associateSpokenLanguages: async (userId, spokenLanguages) => {
-        // Delete the existing associations
-        await pool.query('DELETE FROM user_languages WHERE user_id = $1', [userId]);
+        // Check existing languages to avoid duplicates in the user_languages table
+        const existingLanguages = await pool.query('SELECT * FROM user_languages WHERE user_id = $1', [userId]);
+        const existingLanguagesIds = existingLanguages.rows.map(language => language.language_id);
 
         // Fetch the language ids
         const languageIds = [];
@@ -128,8 +130,11 @@ const User = {
             languageIds.push(result.rows[0].id);
         }
 
+        // Filter out existing languages from the languages array
+        const newLanguages = languageIds.filter(language => !existingLanguagesIds.includes(language));
+
         // Associate the languages with the user
-        for (const languageId of languageIds) {
+        for (const languageId of newLanguages) {
             await pool.query('INSERT INTO user_languages (user_id, language_id) VALUES ($1, $2)', [userId, languageId]);
         }
     }
