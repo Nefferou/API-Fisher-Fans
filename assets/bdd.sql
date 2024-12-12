@@ -16,13 +16,13 @@
 
     -- Table Equipments
     CREATE TABLE equipments (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL
     );
 
     -- Table Languages
     CREATE TABLE languages (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL
     );
 
@@ -50,7 +50,7 @@
 
     -- Table Boats
     CREATE TABLE boats (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL,
         description TEXT,
         boat_type VARCHAR(255),
@@ -67,7 +67,7 @@
 
     -- Table Trips
     CREATE TABLE trips (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         information TEXT,
         type VARCHAR(255),
         price DECIMAL(10, 2),
@@ -83,7 +83,7 @@
 
     -- Table FishingLogs
     CREATE TABLE fishing_logs (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         fish_name VARCHAR(100),
         picture VARCHAR(255),
         comment TEXT,
@@ -95,7 +95,7 @@
 
     -- Table Reservations
     CREATE TABLE reservations (
-        id INT PRIMARY KEY,
+        id SERIAL PRIMARY KEY,
         price DECIMAL(10, 2),
         nb_places INT,
         trip INT,
