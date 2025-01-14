@@ -37,9 +37,9 @@ const v1FishingLogsRoutes = require('./v1/routes/fishingLogsRoutes');
 app.use('/api/v1/auth', v1AuthRoutes);
 app.use('/api/v1/users', authenticate, v1UsersRoutes);
 app.use('/api/v1/boats', authenticate, v1BoatsRoutes);
-app.use('/api/v1/fishingTrips', authenticate, v1FishingTripsRoutes);
+app.use('/api/v1/fishing-trips', authenticate, v1FishingTripsRoutes);
 app.use('/api/v1/reservations', authenticate, v1ReservationsRoutes);
-app.use('/api/v1/fishingLogs', authenticate, v1FishingLogsRoutes);
+app.use('/api/v1/fishing-logs', authenticate, v1FishingLogsRoutes);
 
 https.createServer(credentials, app).listen(port, () => {
     console.log(`API started on the port: ${port}`);

@@ -331,6 +331,8 @@ paths:
           description: Requête invalide
         '401':
           description: Non authentifié
+        '404':
+          description: Propriétaire non trouvé
         '500':
           description: Erreur serveur
     post:
@@ -461,7 +463,7 @@ paths:
         '500':
           description: Erreur serveur
 
-  /v1/trips:
+  /v1/fishing-trips:
     get:
       tags:
         - fishing trip
@@ -502,6 +504,8 @@ paths:
           description: Requête invalide
         '401':
           description: Non authentifié
+        '404':
+          description: Organisateur ou Bateau non trouvé
         '500':
           description: Erreur serveur
     post:
@@ -526,7 +530,7 @@ paths:
         '500':
           description: Erreur serveur
 
-  /v1/trips/{tripId}:
+  /v1/fishing-trips/{tripId}:
     get:
       tags:
         - fishing trip

@@ -97,7 +97,7 @@ const Boat = {
         if (filters.ownerId) {
             const checkOwner = await pool.query('SELECT * FROM users WHERE id = $1', [filters.ownerId]);
             if (checkOwner.rowCount === 0) {
-                throw new Error('Ce propriétaire n\'existe pas');
+                throw new AppError('Propriétaire non trouvé', 404);
             }
         }
 

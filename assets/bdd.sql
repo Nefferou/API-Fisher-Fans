@@ -1,6 +1,7 @@
     -- Supprimer les tables si elles existent
     DROP TABLE IF EXISTS user_boats CASCADE;
     DROP TABLE IF EXISTS user_trips CASCADE;
+    DROP TABLE IF EXISTS trip_boat CASCADE;
     DROP TABLE IF EXISTS user_reservations CASCADE;
     DROP TABLE IF EXISTS user_languages CASCADE;
     DROP TABLE IF EXISTS user_logs CASCADE;
@@ -73,12 +74,7 @@
         price DECIMAL(10, 2),
         cost_type VARCHAR(255),
         date DATE,
-        time TIME,
-        passengers JSON,
-        boat INT,
-        organiser INT,
-        FOREIGN KEY (boat) REFERENCES boats(id),
-        FOREIGN KEY (organiser) REFERENCES users(id)
+        time TIME
     );
 
     -- Table FishingLogs
@@ -88,9 +84,7 @@
         picture VARCHAR(255),
         comment TEXT,
         height INT,
-        weight INT,
-        owner INT,
-        FOREIGN KEY (owner) REFERENCES users(id)
+        weight INT
     );
 
     -- Table Reservations
@@ -118,6 +112,14 @@
         trip_id INT,
         PRIMARY KEY(user_id, trip_id),
         FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (trip_id) REFERENCES trips(id)
+    );
+
+    CREATE TABLE trip_boat (
+        boat_id INT,
+        trip_id INT,
+        PRIMARY KEY(boat_id, trip_id),
+        FOREIGN KEY (boat_id) REFERENCES boats(id),
         FOREIGN KEY (trip_id) REFERENCES trips(id)
     );
 
