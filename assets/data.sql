@@ -3,16 +3,16 @@ INSERT INTO equipments (name) VALUES
 ('sondeur'),
 ('vivier'),
 ('échelle'),
-('GPS'),
+('gps'),
 ('portecannes'),
-('radio VHF');
+('radio_vhf');
 
 -- Insertion des langues
 INSERT INTO languages (name) VALUES
-('English'),
-('French'),
-('Spanish'),
-('German');
+('english'),
+('french'),
+('spanish'),
+('german');
 
 -- Insertion des utilisateurs
 INSERT INTO users (firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number) VALUES

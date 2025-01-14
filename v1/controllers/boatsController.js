@@ -60,7 +60,14 @@ exports.getBoat = async (req, res) => {
 
 exports.getAllBoats = async (req, res) => {
     try {
-        const boats = await Boat.getAllBoats();
+        // get query params
+        const { ownerId, minLatitude, maxLatitude, minLongitude, maxLongitude } = req.query;
+        const filters = { ownerId, minLatitude, maxLatitude, minLongitude, maxLongitude };
+
+        // remove undefined filters
+        Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
+
+        const boats = await Boat.getAllBoats(filters);
         res.json(boats);
     } catch (err) {
         console.error(err);

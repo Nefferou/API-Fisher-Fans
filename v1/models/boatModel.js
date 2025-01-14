@@ -3,6 +3,10 @@ const pool = require('../../dbConfig');
 const Boat = {
     createBoat: async (data) => {
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
+        const checkOwner = await pool.query('SELECT * FROM users WHERE id = $1', [owner]);
+        if (checkOwner.rowCount === 0) {
+            throw new Error('Le propriétaire du bateau n\'existe pas');
+        }
         const result = await pool.query(
             `INSERT INTO boats (name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
@@ -51,16 +55,92 @@ const Boat = {
 
     getBoat: async (id) => {
         const result = await pool.query('SELECT * FROM boats WHERE id = $1', [id]);
+
+        // Fetch the equipments for the boat
+        result.rows[0].equipments = await Boat.fetchBoatEquipments(id);
+
+        // Fetch the owner for the boat
+        result.rows[0].owner = await Boat.fetchBoatOwner(id);
+
         return result.rows[0];
     },
 
-    getAllBoats: async () => {
-        const result = await pool.query('SELECT * FROM boats');
+    getAllBoats: async (filters) => {
+        // base query
+        let query = 'SELECT * FROM boats';
+        const values = [];
+        const conditions = [];
+
+        // if ownerId mentioned, check if the user exists
+        if (filters.ownerId) {
+            const checkOwner = await pool.query('SELECT * FROM users WHERE id = $1', [filters.ownerId]);
+            if (checkOwner.rowCount === 0) {
+                throw new Error('Ce propriétaire n\'existe pas');
+            }
+        }
+
+        // filters minLatitude, maxLatitude, minLongitude, maxLongitude (ownerId is in another table)
+        Object.entries(filters).forEach(([key, value]) => {
+            if (key === 'minLatitude') {
+                conditions.push(`latitude >= $${values.length + 1}`);
+                values.push(value);
+            } else if (key === 'maxLatitude') {
+                conditions.push(`latitude <= $${values.length + 1}`);
+                values.push(value);
+            } else if (key === 'minLongitude') {
+                conditions.push(`longitude >= $${values.length + 1}`);
+                values.push(value);
+            } else if (key === 'maxLongitude') {
+                conditions.push(`longitude <= $${values.length + 1}`);
+                values.push(value);
+            }
+        });
+
+        // add conditions for the location to the query
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        // join with the user_boats table to filter by ownerId if mentioned
+        if (filters.ownerId) {
+            query += conditions.length > 0 ? ' AND ' : ' WHERE ';
+            query += 'id IN (SELECT boat_id FROM user_boats WHERE user_id = $' + (values.length + 1) + ')';
+            values.push(filters.ownerId);
+        }
+
+        // execute the query
+        const result = await pool.query(query, values);
+
+        // Fetch the equipments for each boat
+        for (const boat of result.rows) {
+            boat.equipments = await Boat.fetchBoatEquipments(boat.id);
+        }
+
+        // Fetch the owner for each boat
+        for (const boat of result.rows) {
+            boat.owner = await Boat.fetchBoatOwner(boat.id);
+        }
+
         return result.rows;
     },
 
+    fetchBoatOwner: async (boatId) => {
+        const owner = await pool.query('SELECT user_id FROM user_boats WHERE boat_id = $1', [boatId]);
+        return owner.rows[0].user_id;
+    },
+
+    fetchBoatEquipments: async (boatId) => {
+        const equipments = await pool.query(
+            `SELECT e.name FROM equipments e
+             JOIN boat_equipments be ON e.id = be.equipment_id
+             WHERE be.boat_id = $1`,
+            [boatId]
+        );
+        return equipments.rows.map(equipment => equipment.name);
+    },
+
     associateBoatToUser: async (boatId, userId) => {
-        const result = await pool.query(
+        await pool.query(
             `INSERT INTO user_boats (boat_id, user_id)
              VALUES ($1, $2) RETURNING *`,
             [boatId, userId]
