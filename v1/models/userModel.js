@@ -68,14 +68,9 @@ const User = {
     getUser: async (id) => {
         const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 
-        // Fetch the spoken languages
-        const languageIds = await pool.query('SELECT language_id FROM user_languages WHERE user_id = $1', [id]);
-        const spokenLanguages = [];
-        for (const languageId of languageIds.rows) {
-            const language = await pool.query('SELECT name FROM languages WHERE id = $1', [languageId.language_id]);
-            spokenLanguages.push(language.rows[0].name);
-        }
-        result.rows[0].spokenLanguages = spokenLanguages;
+        // Fetch the spoken languages and boat ids
+        result.rows[0].spokenLanguages = await User.fetchSpokenLanguages(id);
+        result.rows[0].boatIds = await User.fetchBoatIds(id);
 
         return result.rows[0];
     },
@@ -104,18 +99,28 @@ const User = {
         // Execute the query
         const result = await pool.query(query, values);
 
-        // Fetch the spoken languages
+        // Fetch the spoken languages and boat ids for each user
         for (const user of result.rows) {
-            const languageIds = await pool.query('SELECT language_id FROM user_languages WHERE user_id = $1', [user.id]);
-            const spokenLanguages = [];
-            for (const languageId of languageIds.rows) {
-                const language = await pool.query('SELECT name FROM languages WHERE id = $1', [languageId.language_id]);
-                spokenLanguages.push(language.rows[0].name);
-            }
-            user.spokenLanguages = spokenLanguages;
+            user.spokenLanguages = await User.fetchSpokenLanguages(user.id);
+            user.boatIds = await User.fetchBoatIds(user.id);
         }
 
         return result.rows;
+    },
+
+    fetchSpokenLanguages: async (userId) => {
+        const languageIds = await pool.query('SELECT language_id FROM user_languages WHERE user_id = $1', [userId]);
+        const spokenLanguages = [];
+        for (const languageId of languageIds.rows) {
+            const language = await pool.query('SELECT name FROM languages WHERE id = $1', [languageId.language_id]);
+            spokenLanguages.push(language.rows[0].name);
+        }
+        return spokenLanguages;
+    },
+
+    fetchBoatIds: async (userId) => {
+        const boatIds = await pool.query('SELECT boat_id FROM user_boats WHERE user_id = $1', [userId]);
+        return boatIds.rows.map(boat => boat.boat_id);
     },
 
     associateSpokenLanguages: async (userId, spokenLanguages) => {
