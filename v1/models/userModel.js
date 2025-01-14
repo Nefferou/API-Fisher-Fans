@@ -1,7 +1,13 @@
 const pool = require('../../dbConfig');
+const AppError = require('../../utils/AppError');
 
 const User = {
     createUser: async (data) => {
+        // Check if the user already exists
+        const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [data.email]);
+        if (existingUser.rows.length > 0) {
+            throw new AppError('Conflit, l\'utilisateur existe déjà', 409);
+        }
         const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
             `INSERT INTO users (firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number)
@@ -13,6 +19,12 @@ const User = {
     },
 
     updateUser: async (id, data) => {
+        // Check if the user exists
+        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        if (existingUser.rows.length === 0) {
+            throw new AppError('Utilisateur non trouvé', 404);
+        }
+
         const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
             `UPDATE users SET firstname = $1, lastname = $2, email = $3, password = $4, birthday = $5, tel = $6, address = $7, postal_code = $8, city = $9, profile_picture = $10, status = $11, society_name = $12, activity_type = $13, boat_license = $14, insurance_number = $15, siret_number = $16, rc_number = $17
@@ -24,6 +36,12 @@ const User = {
     },
 
     patchUser: async (id, data) => {
+        // Check if the user exists
+        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        if (existingUser.rows.length === 0) {
+            throw new AppError('Utilisateur non trouvé', 404);
+        }
+
         const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
             `UPDATE users SET firstname = COALESCE($1, firstname), lastname = COALESCE($2, lastname), email = COALESCE($3, email), password = COALESCE($4, password), birthday = COALESCE($5, birthday), tel = COALESCE($6, tel), address = COALESCE($7, address), postal_code = COALESCE($8, postal_code), city = COALESCE($9, city), profile_picture = COALESCE($10, profile_picture), status = COALESCE($11, status), society_name = COALESCE($12, society_name), activity_type = COALESCE($13, activity_type), boat_license = COALESCE($14, boat_license), insurance_number = COALESCE($15, insurance_number), siret_number = COALESCE($16, siret_number), rc_number = COALESCE($17, rc_number)
@@ -38,6 +56,12 @@ const User = {
     },
 
     deleteUser: async (id) => {
+        // Check if the user exists
+        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        if (existingUser.rows.length === 0) {
+            throw new AppError('Utilisateur non trouvé', 404);
+        }
+
         const query = `
         UPDATE users
         SET
@@ -66,6 +90,12 @@ const User = {
     },
 
     getUser: async (id) => {
+        // Check if the user exists
+        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
+        if (existingUser.rows.length === 0) {
+            throw new AppError('Utilisateur non trouvé', 404);
+        }
+
         const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 
         // Fetch the spoken languages and boat ids
