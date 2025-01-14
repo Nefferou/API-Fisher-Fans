@@ -153,12 +153,12 @@ const Boat = {
 
     fetchBoatEquipments: async (boatId) => {
         const equipments = await pool.query(
-            `SELECT e.name FROM equipments e
+            `SELECT e.* FROM equipments e
              JOIN boat_equipments be ON e.id = be.equipment_id
              WHERE be.boat_id = $1`,
             [boatId]
         );
-        return equipments.rows.map(equipment => equipment.name);
+        return equipments.rows.map(equipment => equipment.id);
     },
 
     associateBoatToUser: async (boatId, userId) => {
