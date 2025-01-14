@@ -3,6 +3,7 @@
     DROP TABLE IF EXISTS user_trips CASCADE;
     DROP TABLE IF EXISTS trip_boat CASCADE;
     DROP TABLE IF EXISTS user_reservations CASCADE;
+    DROP TABLE IF EXISTS trip_reservations CASCADE;
     DROP TABLE IF EXISTS user_languages CASCADE;
     DROP TABLE IF EXISTS user_logs CASCADE;
     DROP TABLE IF EXISTS boat_equipments CASCADE;
@@ -91,11 +92,7 @@
     CREATE TABLE reservations (
         id SERIAL PRIMARY KEY,
         price DECIMAL(10, 2),
-        nb_places INT,
-        trip INT,
-        organiser INT,
-        FOREIGN KEY (trip) REFERENCES trips(id),
-        FOREIGN KEY (organiser) REFERENCES users(id)
+        nb_places INT
     );
 
     -- Relational Tables for Users
@@ -128,6 +125,14 @@
         reservation_id INT,
         PRIMARY KEY(user_id, reservation_id),
         FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (reservation_id) REFERENCES reservations(id)
+    );
+
+    CREATE TABLE trip_reservations (
+        trip_id INT,
+        reservation_id INT,
+        PRIMARY KEY(trip_id, reservation_id),
+        FOREIGN KEY (trip_id) REFERENCES trips(id),
         FOREIGN KEY (reservation_id) REFERENCES reservations(id)
     );
 

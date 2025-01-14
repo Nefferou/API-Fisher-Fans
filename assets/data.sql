@@ -43,10 +43,10 @@ INSERT INTO fishing_logs (fish_name, picture, comment, height, weight) VALUES
 ('Perch', 'perch.jpg', 'Nice size perch caught!', 30, 80);
 
 -- Insertion des réservations
-INSERT INTO reservations (price, nb_places, trip, organiser) VALUES
-(150.00, 4, 1, 1),
-(200.00, 5, 2, 2),
-(120.00, 3, 3, 3);
+INSERT INTO reservations (price, nb_places) VALUES
+(150.00, 4),
+(200.00, 5),
+(120.00, 3);
 
 -- Insertion des relations entre utilisateurs et bateaux
 INSERT INTO user_boats (user_id, boat_id) VALUES
@@ -77,6 +77,12 @@ INSERT INTO user_reservations (user_id, reservation_id) VALUES
 (3, 3),
 (4, 1),
 (5, 2);
+
+-- Insertion des relations entre voyage et réservations
+INSERT INTO trip_reservations (trip_id, reservation_id) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
 
 -- Insertion des relations entre utilisateurs et langues
 INSERT INTO user_languages (user_id, language_id) VALUES
