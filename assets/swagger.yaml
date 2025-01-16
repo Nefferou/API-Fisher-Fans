@@ -476,7 +476,7 @@ paths:
             type: string
             format: date
           description: Filtrer les sorties de pêche par date
-        - name: organizerId
+        - name: organiserId
           in: query
           required: false
           schema:
@@ -526,7 +526,9 @@ paths:
         '401':
           description: Non authentifié
         '403':
-          description: Pas de bateau disponible
+          description: L'organisateur ne possède pas de bateau
+        '404':
+          description: Organisateur, Bateau ou Passager non trouvé
         '500':
           description: Erreur serveur
 
@@ -554,7 +556,7 @@ paths:
         '401':
           description: Non authentifié
         '404':
-          description: Sortie non trouvée
+          description: Sortie de pêche non trouvée
         '500':
           description: Erreur serveur
     put:
@@ -582,7 +584,37 @@ paths:
         '401':
           description: Non authentifié
         '404':
-          description: Sortie non trouvée
+          description: Sortie de pêche non trouvée
+        '500':
+          description: Erreur serveur
+    patch:
+      tags:
+        - fishing trip
+      summary: Mettre à jour partiellement une sortie de pêche par son ID
+      parameters:
+        - in: path
+          name: tripId
+          required: true
+          schema:
+            type: string
+          description: ID unique de la sortie de pêche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FishingTrip'
+      responses:
+        '200':
+          description: Sortie de pêche mise à jour avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+          description: Sortie de pêche non trouvée
+        '500':
+          description: Erreur serveur
     delete:
       tags:
         - fishing trip
@@ -602,7 +634,7 @@ paths:
         '401':
           description: Non authentifié
         '404':
-          description: Sortie non trouvée
+          description: Sortie de pêche non trouvée
         '500':
           description: Erreur serveur
 
@@ -906,7 +938,7 @@ components:
         information:
           type: string
           description: Informations complémentaires sur la sortie de pêche
-        trip_type:
+        type:
           type: string
           enum: [journaliere, recurente]
           description: Type de sortie de pêche
@@ -926,9 +958,9 @@ components:
           type: array
           description: Liste des passagers de la sortie de pêche
           items:
-            type: string
+            type: integer
             description: Identifiant de l'utilisateur
-        trip_price:
+        price:
           type: integer
           description: Prix de la sortie de pêche
         boat:

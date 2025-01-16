@@ -23,6 +23,17 @@ exports.updateTrip = async (req, res) => {
     }
 };
 
+exports.patchTrip = async (req, res) => {
+    try {
+        const patchedTrip = await FishingTrip.patchTrip(req.params.id, req.body);
+        res.status(200).json(patchedTrip);
+    } catch (err) {
+        console.error(err);
+        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
+        else res.status(500).send('Erreur lors de la mise à jour de la sortie de pêche');
+    }
+}
+
 exports.deleteTrip = async (req, res) => {
     try {
         await FishingTrip.deleteTrip(req.params.id);
@@ -48,8 +59,8 @@ exports.getTrip = async (req, res) => {
 exports.getAllTrips = async (req, res) => {
     try {
         // get query params
-        const {date, organizerId, boatId} = req.query;
-        const filters = {date, organizerId, boatId};
+        const {date, organiserId, boatId} = req.query;
+        const filters = {date, organiserId, boatId};
 
         // remove undefined keys
         Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);

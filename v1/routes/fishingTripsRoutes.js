@@ -8,6 +8,9 @@ router.post('/', fishingTripController.createTrip);
 // Route to update a fishing trip by ID
 router.put('/:id', fishingTripController.updateTrip);
 
+// Route to patch a fishing trip by ID
+router.patch('/:id', fishingTripController.patchTrip);
+
 // Route to delete a fishing trip by ID
 router.delete('/:id', fishingTripController.deleteTrip);
 
