@@ -526,7 +526,7 @@ paths:
         '401':
           description: Non authentifié
         '403':
-          description: L'organisateur ne possède pas de bateau
+          description: L'organisateur ne possède pas le bateau ou le nombre de passagers est supérieur à la capacité du bateau
         '404':
           description: Organisateur, Bateau ou Passager non trouvé
         '500':
@@ -583,6 +583,8 @@ paths:
           description: Requête invalide
         '401':
           description: Non authentifié
+        '403':
+            description: L'organisateur ne possède pas le bateau ou le nombre de passagers est supérieur à la capacité du bateau
         '404':
           description: Sortie de pêche non trouvée
         '500':
@@ -611,6 +613,8 @@ paths:
           description: Requête invalide
         '401':
           description: Non authentifié
+        '403':
+          description: L'organisateur ne possède pas le bateau ou le nombre de passagers est supérieur à la capacité du bateau
         '404':
           description: Sortie de pêche non trouvée
         '500':
