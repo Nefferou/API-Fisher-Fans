@@ -1,5 +1,5 @@
 const Boat = require('../models/boatModel');
-const AppError = require('../../utils/AppError');
+const AppError = require('../../utils/appError');
 
 exports.createBoat = async (req, res) => {
     try {

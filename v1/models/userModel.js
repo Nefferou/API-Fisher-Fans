@@ -1,13 +1,11 @@
 const pool = require('../../dbConfig');
-const AppError = require('../../utils/AppError');
+const GeneralCheckers = require('../../utils/generalCheckers');
 
 const User = {
     createUser: async (data) => {
         // Check if the user already exists
-        const existingUser = await pool.query('SELECT * FROM users WHERE email = $1', [data.email]);
-        if (existingUser.rows.length > 0) {
-            throw new AppError('Conflit, l\'utilisateur existe déjà', 409);
-        }
+        await GeneralCheckers.checkUserExistsByEmail(data.email);
+
         const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
             `INSERT INTO users (firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number)
@@ -20,10 +18,7 @@ const User = {
 
     updateUser: async (id, data) => {
         // Check if the user exists
-        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        if (existingUser.rows.length === 0) {
-            throw new AppError('Utilisateur non trouvé', 404);
-        }
+        await GeneralCheckers.checkUserExistsById(id);
 
         const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
@@ -37,10 +32,7 @@ const User = {
 
     patchUser: async (id, data) => {
         // Check if the user exists
-        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        if (existingUser.rows.length === 0) {
-            throw new AppError('Utilisateur non trouvé', 404);
-        }
+        await GeneralCheckers.checkUserExistsById(id);
 
         const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = data;
         const result = await pool.query(
@@ -57,10 +49,7 @@ const User = {
 
     deleteUser: async (id) => {
         // Check if the user exists
-        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        if (existingUser.rows.length === 0) {
-            throw new AppError('Utilisateur non trouvé', 404);
-        }
+        await GeneralCheckers.checkUserExistsById(id);
 
         const query = `
         UPDATE users
@@ -91,10 +80,7 @@ const User = {
 
     getUser: async (id) => {
         // Check if the user exists
-        const existingUser = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
-        if (existingUser.rows.length === 0) {
-            throw new AppError('Utilisateur non trouvé', 404);
-        }
+        await GeneralCheckers.checkUserExistsById(id);
 
         const result = await pool.query('SELECT * FROM users WHERE id = $1', [id]);
 

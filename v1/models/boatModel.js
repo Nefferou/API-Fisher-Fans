@@ -1,18 +1,14 @@
 const pool = require('../../dbConfig');
-const AppError = require('../../utils/AppError');
+const GeneralCheckers = require('../../utils/generalCheckers');
+const SpecificCheckers = require('../../utils/specificCheckers');
 
 const Boat = {
     createBoat: async (data) => {
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
         // Check if the owner exists and has a valid boat_license
-        const checkOwner = await pool.query('SELECT * FROM users WHERE id = $1', [owner]);
-        // Give the error to the catch block in the controller
-        if (checkOwner.rowCount === 0) {
-            throw new AppError('Ce propriétaire n\'existe pas', 404);
-        }
-        if (!checkOwner.rows[0].boat_license) {
-            throw new AppError('Pas de permis bateau valide', 403);
-        }
+        await GeneralCheckers.checkUserExistsById(owner, 'Propriétaire');
+        await SpecificCheckers.checkUserBoatLicense(owner);
+
         const result = await pool.query(
             `INSERT INTO boats (name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
@@ -25,10 +21,8 @@ const Boat = {
 
     updateBoat: async (id, data) => {
         // Check if the boat exists
-        const checkBoat = await pool.query('SELECT * FROM boats WHERE id = $1', [id]);
-        if (checkBoat.rowCount === 0) {
-            throw new AppError('Bateau non trouvé', 404);
-        }
+        await GeneralCheckers.checkBoatExists(id);
+
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
         const result = await pool.query(
             `UPDATE boats SET name = $1, description = $2, boat_type = $3, picture = $4, licence_type = $5, bail = $6, max_capacity = $7, city = $8, longitude = $9, latitude = $10, motor_type = $11, motor_power = $12
@@ -42,10 +36,8 @@ const Boat = {
 
     patchBoat: async (id, data) => {
         // Check if the boat exists
-        const checkBoat = await pool.query('SELECT * FROM boats WHERE id = $1', [id]);
-        if (checkBoat.rowCount === 0) {
-            throw new AppError('Bateau non trouvé', 404);
-        }
+        await GeneralCheckers.checkBoatExists(id);
+
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, equipments } = data;
         const result = await pool.query(
             `UPDATE boats SET name = COALESCE($1, name), description = COALESCE($2, description), boat_type = COALESCE($3, boat_type), picture = COALESCE($4, picture), licence_type = COALESCE($5, licence_type), bail = COALESCE($6, bail), max_capacity = COALESCE($7, max_capacity), city = COALESCE($8, city), longitude = COALESCE($9, longitude), latitude = COALESCE($10, latitude), motor_type = COALESCE($11, motor_type), motor_power = COALESCE($12, motor_power)
@@ -60,10 +52,7 @@ const Boat = {
 
     deleteBoat: async (id) => {
         // Check if the boat exists
-        const checkBoat = await pool.query('SELECT * FROM boats WHERE id = $1', [id]);
-        if (checkBoat.rowCount === 0) {
-            throw new AppError('Bateau non trouvé', 404);
-        }
+        await GeneralCheckers.checkBoatExists(id);
 
         // Delete the boat from the boat_equipments table first
         await pool.query('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
@@ -76,6 +65,9 @@ const Boat = {
     },
 
     getBoat: async (id) => {
+        // Check if the boat exists
+        await GeneralCheckers.checkBoatExists(id);
+
         const result = await pool.query('SELECT * FROM boats WHERE id = $1', [id]);
 
         // Fetch the equipments for the boat
@@ -95,10 +87,7 @@ const Boat = {
 
         // if ownerId mentioned, check if the user exists
         if (filters.ownerId) {
-            const checkOwner = await pool.query('SELECT * FROM users WHERE id = $1', [filters.ownerId]);
-            if (checkOwner.rowCount === 0) {
-                throw new AppError('Propriétaire non trouvé', 404);
-            }
+            await GeneralCheckers.checkUserExistsById(filters.ownerId, 'Propriétaire');
         }
 
         // filters minLatitude, maxLatitude, minLongitude, maxLongitude (ownerId is in another table)

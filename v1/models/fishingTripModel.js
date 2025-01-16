@@ -1,33 +1,18 @@
 const pool = require('../../dbConfig');
-const AppError = require('../../utils/appError');
+const GeneralCheckers = require('../../utils/generalCheckers');
+const SpecificCheckers = require('../../utils/specificCheckers');
 
 const FishingTrip = {
     createTrip: async (data) => {
         const { information, type, price, cost_type, date, time, passengers, boat, organiser } = data;
 
-        // Check if the organizer exists
-        const checkOrganizer = await pool.query('SELECT * FROM users WHERE id = $1', [organiser]);
-        if (checkOrganizer.rowCount === 0) {
-            throw new AppError('Organisateur non trouvé', 404);
-        }
-        // Check if the boat exists
-        const checkBoat = await pool.query('SELECT * FROM boats WHERE id = $1', [boat]);
-        if (checkBoat.rowCount === 0) {
-            throw new AppError('Bateau non trouvé', 404);
-        }
-        // Check if the passengers exist
+        // Check if the organizer, boat, passengers exist and if the organizer owns the boat
+        await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
+        await GeneralCheckers.checkBoatExists(boat);
         for (const passenger of passengers) {
-            const checkPassenger = await pool.query('SELECT * FROM users WHERE id = $1', [passenger]);
-            if (checkPassenger.rowCount === 0) {
-                throw new AppError('Passager(s) non trouvé', 404);
-            }
+            await GeneralCheckers.checkUserExistsById(passenger, 'Passager(s)');
         }
-
-        // Check if the boat is owned by the organizer
-        const checkOwnership = await pool.query('SELECT * FROM user_boats WHERE user_id = $1 AND boat_id = $2', [organiser, boat]);
-        if (checkOwnership.rowCount === 0) {
-            throw new AppError('L\'organisateur ne possède pas de bateau', 403);
-        }
+        await SpecificCheckers.checkOwnership(organiser, boat);
 
         const result = await pool.query(
             `INSERT INTO trips (information, type, price, cost_type, date, time)
@@ -47,10 +32,7 @@ const FishingTrip = {
 
     updateTrip: async (id, data) => {
         // Check if the trip exists
-        const checkTrip = await pool.query('SELECT * FROM trips WHERE id = $1', [id]);
-        if (checkTrip.rowCount === 0) {
-            throw new AppError('Sortie de pêche non trouvée', 404);
-        }
+        await GeneralCheckers.checkTripExists(id);
 
         const { information, type, price, cost_type, date, time, passengers, boat, organiser } = data;
         const result = await pool.query(
@@ -74,10 +56,7 @@ const FishingTrip = {
 
     patchTrip: async (id, data) => {
         // Check if the trip exists
-        const checkTrip = await pool.query('SELECT * FROM trips WHERE id = $1', [id]);
-        if (checkTrip.rowCount === 0) {
-            throw new AppError('Sortie de pêche non trouvée', 404);
-        }
+        await GeneralCheckers.checkTripExists(id);
 
         const { information, type, price, cost_type, date, time, passengers, boat, organiser } = data;
         const result = await pool.query(
@@ -112,6 +91,9 @@ const FishingTrip = {
     },
 
     deleteTrip: async (id) => {
+        // Check if the trip exists
+        await GeneralCheckers.checkTripExists(id);
+
         // delete the associated data first
         await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
         await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
@@ -119,17 +101,14 @@ const FishingTrip = {
         await pool.query('DELETE FROM trip_passengers WHERE trip_id = $1', [id]);
 
         const result = await pool.query('DELETE FROM trips WHERE id = $1', [id]);
-        if (result.rowCount === 0) {
-            throw new AppError('Sortie de pêche non trouvée', 404);
-        }
         return result.rowCount;
     },
 
     getTrip: async (id) => {
+        // Check if the trip exists
+        await GeneralCheckers.checkTripExists(id);
+
         const result = await pool.query('SELECT * FROM trips WHERE id = $1', [id]);
-        if (result.rowCount === 0) {
-            throw new AppError('Sortie de pêche non trouvée', 404);
-        }
 
         // fetch the associated data
         result.rows[0].organiser = await FishingTrip.fetchTripOrganiser(id);
@@ -141,18 +120,12 @@ const FishingTrip = {
     getAllTrips: async (filters) => {
         // if organizerId provided, check if exists
         if (filters.organiserId) {
-            const result = await pool.query('SELECT * FROM users WHERE id = $1', [filters.organiserId]);
-            if (result.rowCount === 0) {
-                throw new AppError('Organisateur non trouvé', 404);
-            }
+            await GeneralCheckers.checkUserExistsById(filters.organiserId, 'Organisateur');
         }
 
         // if boatId provided, check if exists
         if (filters.boatId) {
-            const result = await pool.query('SELECT * FROM boats WHERE id = $1', [filters.boatId]);
-            if (result.rowCount === 0) {
-                throw new AppError('Bateau non trouvé', 404);
-            }
+            await GeneralCheckers.checkBoatExists(filters.boatId);
         }
 
         // base query

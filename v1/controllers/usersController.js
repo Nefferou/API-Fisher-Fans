@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const bcrypt = require("bcryptjs");
-const AppError = require("../../utils/AppError");
+const AppError = require("../../utils/appError");
 
 exports.createUser = async (req, res) => {
     try {
