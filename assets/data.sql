@@ -73,10 +73,7 @@ INSERT INTO trip_boat (boat_id, trip_id) VALUES
 -- Insertion des relations entre utilisateurs et réservations
 INSERT INTO user_reservations (user_id, reservation_id) VALUES
 (1, 1),
-(4, 1),
 (6, 2),
-(7, 2),
-(8, 2),
 (9, 3);
 
 -- Insertion des relations entre voyage et réservations

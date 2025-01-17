@@ -655,12 +655,12 @@ paths:
         - reservation
       summary: Récupérer toutes les réservations
       parameters:
-        - name: status
+        - name: tripId
           in: query
           required: false
           schema:
-            type: string
-          description: Filtrer les réservations par statut
+            type: integer
+          description: ID de la sortie de pêche pour filtrer les réservations
       responses:
         '200':
           description: Liste des réservations récupérée avec succès
@@ -1001,9 +1001,9 @@ components:
         reservation_price:
           type: integer
           description: Prix de la réservation
-        organiser:
+        user:
           type: integer
-          description: Identifiant de l'organisateur de la réservation
+          description: Identifiant de l'utilisateur ayant réservé
 
     FishingLog:
       type: object
