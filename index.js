@@ -44,3 +44,6 @@ app.use('/api/v1/fishing-logs', authenticate, v1FishingLogsRoutes);
 https.createServer(credentials, app).listen(port, () => {
     console.log(`API started on the port: ${port}`);
 });
+
+// Exporter l'application pour la tester
+module.exports = app;
