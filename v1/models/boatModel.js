@@ -7,7 +7,7 @@ const Boat = {
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
         // Check if the owner exists and has a valid boat_license
         await GeneralCheckers.checkUserExistsById(owner, 'Propriétaire');
-        await SpecificCheckers.checkUserBoatLicense(owner);
+        await SpecificCheckers.checkUserBoatLicense(owner, licence_type);
 
         const result = await pool.query(
             `INSERT INTO boats (name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power)
@@ -114,6 +114,9 @@ const Boat = {
 
         // join with the user_boats table to filter by ownerId if mentioned
         if (filters.ownerId) {
+            // check if user exists
+            await GeneralCheckers.checkUserExistsById(filters.ownerId, 'Propriétaire');
+
             query += conditions.length > 0 ? ' AND ' : ' WHERE ';
             query += 'id IN (SELECT boat_id FROM user_boats WHERE user_id = $' + (values.length + 1) + ')';
             values.push(filters.ownerId);

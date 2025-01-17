@@ -59,8 +59,8 @@ exports.getTrip = async (req, res) => {
 exports.getAllTrips = async (req, res) => {
     try {
         // get query params
-        const {date, organiserId, boatId} = req.query;
-        const filters = {date, organiserId, boatId};
+        const {beginDate, endDate, organiserId, boatId} = req.query;
+        const filters = {beginDate, endDate, organiserId, boatId};
 
         // remove undefined keys
         Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);

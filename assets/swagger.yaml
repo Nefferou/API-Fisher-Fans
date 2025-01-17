@@ -469,13 +469,20 @@ paths:
         - fishing trip
       summary: Récupérer toutes les sorties de pêche
       parameters:
-        - name: date
+        - name: beginDate
           in: query
           required: false
           schema:
             type: string
             format: date
-          description: Filtrer les sorties de pêche par date
+          description: Filtrer par date de début
+        - name: endDate
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+          description: Filtrer par date de fin
         - name: organiserId
           in: query
           required: false
@@ -820,7 +827,6 @@ components:
       bearerFormat: JWT
 
   schemas:
-
     User:
       type: object
       properties:
@@ -876,6 +882,7 @@ components:
           description: Nom de la société de l'utilisateur
         activity_type:
           type: string
+          enum: [guide, loueur]
           description: Type d'activité de l'utilisateur
         siret_number:
           type: string
@@ -911,7 +918,7 @@ components:
           type: array
           items:
             type: string
-            enum: [sondeur, vivier, gps, echelle, porte-cannes, radio]
+            enum: [sondeur, vivier, gps, echelle, gps, porte-cannes, radio vhf]
           description: Liste de l'équipement disponible sur le bateau
         bail:
           type: integer
@@ -923,10 +930,10 @@ components:
           type: string
           description: Ville de stationnement du bateau
         longitude:
-          type: float
+          type: number
           description: Coordonnées GPS du bateau
         latitude:
-          type: float
+          type: number
           description: Coordonnées GPS du bateau
         motor_type:
           type: string
@@ -944,20 +951,28 @@ components:
           description: Informations complémentaires sur la sortie de pêche
         type:
           type: string
-          enum: [journaliere, recurente]
+          enum: [journalière, récurrente]
           description: Type de sortie de pêche
         cost_type:
           type: string
           enum: [global, par personne]
           description: Type de coût de la sortie de pêche
-        date:
+        begin_date:
           type: string
           format: date
-          description: Date de la sortie de pêche
-        time:
+          description: Date de début de la sortie de pêche*
+        end_date:
+          type: string
+          format: date
+          description: Date de fin de la sortie de pêche
+        begin_time:
           type: string
           format: time
-          description: Heure de la sortie de pêche
+          description: Heure de début de la sortie de pêche
+        end_time:
+          type: string
+          format: time
+          description: Heure de fin de la sortie de pêche
         passengers:
           type: array
           description: Liste des passagers de la sortie de pêche

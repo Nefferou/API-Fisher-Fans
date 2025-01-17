@@ -2,9 +2,14 @@ const AppError = require('./appError');
 const pool = require('../dbConfig');
 
 const SpecificCheckers = {
-    async checkUserBoatLicense(userId) {
-        const user = await pool.query('SELECT * FROM users WHERE id = $1', [userId]);
-        if (!user.rows[0].boat_license) {
+    async checkUserBoatLicense(userId, requiredLicense) {
+        const result = await pool.query('SELECT boat_license FROM users WHERE id = $1', [userId]);
+        if (result.rowCount === 0 || !result.rows[0].boat_license) {
+            throw new AppError('Utilisateur sans permis de bateau', 403);
+        }
+
+        const userLicensePrefix = result.rows[0].boat_license.slice(0, 2).toLowerCase();
+        if (userLicensePrefix !== requiredLicense.slice(0, 2).toLowerCase()) {
             throw new AppError('Pas de permis bateau valide', 403);
         }
     },

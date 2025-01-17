@@ -162,9 +162,14 @@ const FishingTrip = {
         const values = [];
         let parameterIndex = 1;
 
-        if (filters.date) {
-            query += ` AND DATE(t.date) = DATE($${parameterIndex})`;
-            values.push(filters.date);
+        if (filters.beginDate) {
+            query += ` AND t.begin_date >= $${parameterIndex}`;
+            values.push(filters.beginDate);
+            parameterIndex++;
+        }
+        if (filters.endDate) {
+            query += ` AND t.end_date <= $${parameterIndex}`;
+            values.push(filters.endDate);
             parameterIndex++;
         }
         if (filters.organiserId) {

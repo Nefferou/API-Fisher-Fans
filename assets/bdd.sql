@@ -74,8 +74,10 @@
         type VARCHAR(255),
         price DECIMAL(10, 2),
         cost_type VARCHAR(255),
-        date DATE,
-        time TIME
+        begin_date DATE,
+        end_date DATE,
+        begin_time TIME,
+        end_time TIME
     );
 
     -- Table FishingLogs
@@ -85,7 +87,10 @@
         picture VARCHAR(255),
         comment TEXT,
         height INT,
-        weight INT
+        weight INT,
+        location VARCHAR(255),
+        date DATE,
+        freed BOOLEAN
     );
 
     -- Table Reservations
