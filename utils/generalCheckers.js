@@ -16,10 +16,24 @@ const GeneralCheckers = {
         }
     },
 
+    async checkUserLanguages(languagesName) {
+        const languages = await pool.query('SELECT * FROM languages WHERE name = ANY($1)', [languagesName]);
+        if (languages.rowCount !== languagesName.length) {
+            throw new AppError('Langue(s) non trouvée(s)', 404);
+        }
+    },
+
     async checkBoatExists(boatId) {
         const boat = await pool.query('SELECT * FROM boats WHERE id = $1', [boatId]);
         if (boat.rowCount === 0) {
             throw new AppError('Bateau non trouvé', 404);
+        }
+    },
+
+    async checkEquipmentExists(equipmentName) {
+        const equipment = await pool.query('SELECT * FROM equipments WHERE name = $1', [equipmentName]);
+        if (equipment.rowCount === 0) {
+            throw new AppError('Équipement non trouvé', 404);
         }
     },
 

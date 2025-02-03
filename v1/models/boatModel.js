@@ -5,9 +5,12 @@ const SpecificCheckers = require('../../utils/specificCheckers');
 const Boat = {
     createBoat: async (data) => {
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
-        // Check if the owner exists and has a valid boat_license
+        // Checkers
         await GeneralCheckers.checkUserExistsById(owner, 'Propriétaire');
         await SpecificCheckers.checkUserBoatLicense(owner, licence_type);
+        equipments.forEach(equipment => {
+            GeneralCheckers.checkEquipmentExists(equipment);
+        });
 
         const result = await pool.query(
             `INSERT INTO boats (name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power)
@@ -20,10 +23,14 @@ const Boat = {
     },
 
     updateBoat: async (id, data) => {
-        // Check if the boat exists
-        await GeneralCheckers.checkBoatExists(id);
-
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
+        // Checkers
+        await GeneralCheckers.checkBoatExists(id);
+        await SpecificCheckers.checkUserBoatLicense(owner, licence_type);
+        equipments.forEach(equipment => {
+            GeneralCheckers.checkEquipmentExists(equipment);
+        });
+
         const result = await pool.query(
             `UPDATE boats SET name = $1, description = $2, boat_type = $3, picture = $4, licence_type = $5, bail = $6, max_capacity = $7, city = $8, longitude = $9, latitude = $10, motor_type = $11, motor_power = $12
              WHERE id = $13 RETURNING *`,
@@ -45,6 +52,9 @@ const Boat = {
             [name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, id]
         );
         if (equipments) {
+            equipments.forEach(equipment => {
+                GeneralCheckers.checkEquipmentExists(equipment);
+            });
             await Boat.associateEquipmentToBoat(result.rows[0].id, equipments);
         }
         return result.rows[0];
