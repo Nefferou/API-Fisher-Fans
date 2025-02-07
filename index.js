@@ -41,9 +41,12 @@ app.use('/api/v1/fishing-trips', authenticate, v1FishingTripsRoutes);
 app.use('/api/v1/reservations', authenticate, v1ReservationsRoutes);
 app.use('/api/v1/fishing-logs', authenticate, v1FishingLogsRoutes);
 
-https.createServer(credentials, app).listen(port, () => {
-    console.log(`API started on the port: ${port}`);
-});
+// 🔹 **Empêche le serveur de démarrer en mode test**
+if (process.env.NODE_ENV !== 'test') {
+    https.createServer(credentials, app).listen(port, () => {
+        console.log(`API started on port: ${port}`);
+    });
+}
 
 // Exporter l'application pour la tester
 module.exports = app;

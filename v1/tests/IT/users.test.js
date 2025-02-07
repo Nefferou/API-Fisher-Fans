@@ -1,6 +1,10 @@
 const request = require('supertest');
-const app = require('../../../index');  // Import de votre application Express
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJhbGljZS5qb2huc29uQGV4YW1wbGUuY29tIiwiaWF0IjoxNzM3MTI0MTg5LCJleHAiOjE3MzcxMjc3ODl9.WVfsaRHSwVYbci5qAbSX2EXTH29TIpf3eelizeIB7MU';
+const app = require('../../../index');
+
+let token = '';
+const port = 3001;
+let server;
+let baseUrl;
 
 // Fonction pour générer une adresse e-mail aléatoire
 function generateRandomEmail() {
@@ -8,12 +12,30 @@ function generateRandomEmail() {
   return `${randomString}@example.com`;
 }
 
+// Fonction qui effectue un login et récupère le token JWT avant de lancer les tests
+beforeAll(async () => {
+  server = app.listen(port, () => {
+    console.log(`🚀 Test server running on port ${port}`);
+  });
+  baseUrl = `http://localhost:${port}`;
+
+  const loginResponse = await request(baseUrl)
+      .post('/api/v1/auth/login')
+      .send({
+        email: "alice.johnson@example.com",
+        password: "test"
+      });
+
+  expect(loginResponse.status).toBe(200);  // Vérifie que l'authentification réussit
+  token = loginResponse.body.token;  // Récupère dynamiquement le token
+});
+
 describe('Test users paths', () => {
   // Test GET
   describe('GET all', () => {
     it('All users', async () => {
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .get(`/api/v1/users`)
           .set('Authorization', `Bearer ${token}`);
 
@@ -25,7 +47,7 @@ describe('Test users paths', () => {
     it('User ID exist', async () => {
       const userId = 1;  // Remplacez par un ID d'utilisateur valide
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .get(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`);
 
@@ -36,7 +58,7 @@ describe('Test users paths', () => {
     it('User ID not exist', async () => {
       const userId = 9999;  // ID qui n'existe pas
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .get(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`);
 
@@ -74,7 +96,7 @@ describe('Test users paths', () => {
         spokenLanguages: ['french']
       };
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .post(`/api/v1/users`)
           .set('Authorization', `Bearer ${token}`)
           .send(newUser);
@@ -94,7 +116,7 @@ describe('Test users paths', () => {
         // Missing other required fields
       };
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .post(`/api/v1/users`)
           .set('Authorization', `Bearer ${token}`)
           .send(incompleteUser);
@@ -130,7 +152,7 @@ describe('Test users paths', () => {
         spokenLanguages: ['french']
       };
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .put(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`)
           .send(updatedData);
@@ -162,7 +184,7 @@ describe('Test users paths', () => {
         spokenLanguages: ['french']
       };
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .put(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`)
           .send(updatedData);
@@ -180,7 +202,7 @@ describe('Test users paths', () => {
         city: 'UpdatedCity'
       };
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .patch(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`)
           .send(patchData);
@@ -195,7 +217,7 @@ describe('Test users paths', () => {
         city: 'UpdatedCity'
       };
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .patch(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`)
           .send(patchData);
@@ -210,7 +232,7 @@ describe('Test users paths', () => {
     it('Delete user successfully', async () => {
       const userId = 1;  // Remplacez avec un ID d'utilisateur valide
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .delete(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`);
 
@@ -220,7 +242,7 @@ describe('Test users paths', () => {
     it('Delete user with invalid ID', async () => {
       const userId = 9999;  // ID qui n'existe pas
 
-      const response = await request(app)
+      const response = await request(baseUrl)
           .delete(`/api/v1/users/${userId}`)
           .set('Authorization', `Bearer ${token}`);
 

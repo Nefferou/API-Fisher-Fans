@@ -5,7 +5,6 @@ exports.createLog = async (req, res) => {
         const newLog = await FishingLog.createLog(req.body);
         res.status(201).json(newLog);
     } catch (err) {
-        console.error(err);
         res.status(500).send('Erreur lors de la création du carnet de pêche');
     }
 };
@@ -15,7 +14,6 @@ exports.updateLog = async (req, res) => {
         const updatedLog = await FishingLog.updateLog(req.params.id, req.body);
         res.json(updatedLog);
     } catch (err) {
-        console.error(err);
         res.status(500).send('Erreur lors de la mise à jour du carnet de pêche');
     }
 };
@@ -29,7 +27,6 @@ exports.deleteLog = async (req, res) => {
             res.status(404).send('Carnet de pêche non trouvé');
         }
     } catch (err) {
-        console.error(err);
         res.status(500).send('Erreur lors de la suppression du carnet de pêche');
     }
 };
@@ -43,7 +40,6 @@ exports.getLog = async (req, res) => {
             res.json(log);
         }
     } catch (err) {
-        console.error(err);
         res.status(500).send('Erreur lors de la récupération du carnet de pêche');
     }
 };
@@ -53,7 +49,6 @@ exports.getAllLogs = async (req, res) => {
         const logs = await FishingLog.getAllLogs();
         res.json(logs);
     } catch (err) {
-        console.error(err);
         res.status(500).send('Erreur lors de la récupération des carnets de pêche');
     }
 };
