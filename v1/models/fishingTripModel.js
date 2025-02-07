@@ -73,7 +73,6 @@ const FishingTrip = {
         if (boat) {
             await GeneralCheckers.checkBoatExists(boat);
             await SpecificCheckers.checkOwnership(currentTrip.organiser, boat);
-            await SpecificCheckers.checkBoatCapacity(boat, currentTrip.passengers);
 
             await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
             await FishingTrip.associateTripToBoat(id, boat);

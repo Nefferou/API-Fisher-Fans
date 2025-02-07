@@ -21,10 +21,30 @@ const SpecificCheckers = {
         }
     },
 
-    async checkBoatCapacity(boatId, passengers) {
-        const boat = await pool.query('SELECT max_capacity FROM boats WHERE id = $1', [boatId]);
-        if (boat.rows[0].max_capacity < passengers) {
-            throw new AppError('Capacité du bateau insuffisante', 403);
+    async checkBoatCapacity(tripId, nb_places, reservationId = null) {
+        let query = `
+        SELECT SUM(nb_places) AS total 
+        FROM reservations r 
+        JOIN trip_reservations tr ON r.id = tr.reservation_id 
+        WHERE tr.trip_id = $1
+    `;
+        let params = [tripId];
+
+        if (reservationId) {
+            query += " AND r.id != $2";
+            params.push(reservationId);
+        }
+
+        const existing_passengers = await pool.query(query, params);
+        const total_passengers = (parseInt(existing_passengers.rows[0].total) || 0) + parseInt(nb_places);
+
+        const boat_capacity = await pool.query(
+            'SELECT max_capacity FROM boats b JOIN trip_boat tb ON b.id = tb.boat_id WHERE tb.trip_id = $1',
+            [tripId]
+        );
+
+        if (total_passengers > boat_capacity.rows[0].max_capacity) {
+            throw new AppError('Capacité du bateau dépassée', 403);
         }
     }
 }

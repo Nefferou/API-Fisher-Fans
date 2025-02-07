@@ -8,6 +8,9 @@ router.post('/', reservationController.createReservation);
 // Route to update a reservation by ID
 router.put('/:id', reservationController.updateReservation);
 
+// Route to patch a reservation by ID
+router.patch('/:id', reservationController.patchReservation);
+
 // Route to delete a reservation by ID
 router.delete('/:id', reservationController.deleteReservation);
 
