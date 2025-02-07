@@ -7,7 +7,6 @@
     DROP TABLE IF EXISTS user_languages CASCADE;
     DROP TABLE IF EXISTS user_logs CASCADE;
     DROP TABLE IF EXISTS boat_equipments CASCADE;
-    DROP TABLE IF EXISTS trip_passengers CASCADE;
     DROP TABLE IF EXISTS fishing_logs CASCADE;
     DROP TABLE IF EXISTS reservations CASCADE;
     DROP TABLE IF EXISTS trips CASCADE;
@@ -164,13 +163,4 @@
         PRIMARY KEY(boat_id, equipment_id),
         FOREIGN KEY (boat_id) REFERENCES boats(id),
         FOREIGN KEY (equipment_id) REFERENCES equipments(id)
-    );
-
-    -- Relational Tables for Trips
-    CREATE TABLE trip_passengers (
-        trip_id INT,
-        user_id INT,
-        PRIMARY KEY(trip_id, user_id),
-        FOREIGN KEY (trip_id) REFERENCES trips(id),
-        FOREIGN KEY (user_id) REFERENCES users(id)
     );

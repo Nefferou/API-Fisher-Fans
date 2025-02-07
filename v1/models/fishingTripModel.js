@@ -4,61 +4,46 @@ const SpecificCheckers = require('../../utils/specificCheckers');
 
 const FishingTrip = {
     createTrip: async (data) => {
-        const { information, type, price, cost_type, date, time, passengers, boat, organiser } = data;
+        const { information, type, price, cost_type, begin_date, end_date, begin_time, end_time, boat, organiser } = data;
 
-        // Check if the organizer, boat, passengers exist, if the organizer owns the boat and if the boat has enough capacity
+        // Check if the organizer, boat, if the organizer owns the boat
         await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
         await GeneralCheckers.checkBoatExists(boat);
-        for (const passenger of passengers) {
-            await GeneralCheckers.checkUserExistsById(passenger, 'Passager(s)');
-        }
         await SpecificCheckers.checkOwnership(organiser, boat);
-        await SpecificCheckers.checkBoatCapacity(boat, passengers);
 
         const result = await pool.query(
-            `INSERT INTO trips (information, type, price, cost_type, date, time)
-             VALUES ($1, $2, $3, $4, $5, $6) RETURNING *`,
-            [information, type, price, cost_type, date, time]
+            `INSERT INTO trips (information, type, price, cost_type, begin_date, end_date, begin_time, end_time)
+             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time]
         );
 
         // make the associations
         await FishingTrip.associateTripToBoat(result.rows[0].id, boat);
         await FishingTrip.associateTripToUser(result.rows[0].id, organiser);
-        for (const passenger of passengers) {
-            await FishingTrip.associateTripToPassenger(result.rows[0].id, passenger);
-        }
 
         return result.rows[0];
     },
 
     updateTrip: async (id, data) => {
-        const { information, type, price, cost_type, date, time, passengers, boat, organiser } = data;
+        const { information, type, price, cost_type, begin_date, end_date, begin_time, end_time, boat, organiser } = data;
 
-        // Check if the trip, organizer, boat, passengers exist, if the organizer owns the boat and if the boat has enough capacity
+        // Check if the trip, organizer, boat, if the organizer owns the boat and if the boat has enough capacity
         await GeneralCheckers.checkTripExists(id);
         await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
         await GeneralCheckers.checkBoatExists(boat);
-        for (const passenger of passengers) {
-            await GeneralCheckers.checkUserExistsById(passenger, 'Passager(s)');
-        }
         await SpecificCheckers.checkOwnership(organiser, boat);
-        await SpecificCheckers.checkBoatCapacity(boat, passengers);
 
         const result = await pool.query(
-            `UPDATE trips SET information = $1, type = $2, price = $3, cost_type = $4, date = $5, time = $6
+            `UPDATE trips SET information = $1, type = $2, price = $3, cost_type = $4, begin_date = $5, end_date = $6, begin_time = $7, end_time = $8
              WHERE id = $10 RETURNING *`,
-            [information, type, price, cost_type, date, time]
+            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time]
         );
 
         // update the associations
         await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
         await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
-        await pool.query('DELETE FROM trip_passengers WHERE trip_id = $1', [id]);
         await FishingTrip.associateTripToBoat(id, boat);
         await FishingTrip.associateTripToUser(id, organiser);
-        for (const passenger of passengers) {
-            await FishingTrip.associateTripToPassenger(id, passenger);
-        }
 
         return result.rows[0];
     },
@@ -69,17 +54,19 @@ const FishingTrip = {
 
         const currentTrip = await FishingTrip.getTrip(id);
 
-        const { information, type, price, cost_type, date, time, passengers, boat, organiser } = data;
+        const { information, type, price, cost_type, begin_date, end_date, begin_time, end_time, boat, organiser } = data;
         const result = await pool.query(
             `UPDATE trips
              SET information = COALESCE($1, information), 
                  type = COALESCE($2, type), 
                  price = COALESCE($3, price), 
                  cost_type = COALESCE($4, cost_type), 
-                 date = COALESCE($5, date), 
-                 time = COALESCE($6, time)
+                 begin_date = COALESCE($5, begin_date),
+                 end_date = COALESCE($6, end_date),
+                 begin_time = COALESCE($7, begin_time),
+                 end_time = COALESCE($8, end_time)
              WHERE id = $7 RETURNING *`,
-            [information, type, price, cost_type, date, time, id]
+            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time, id]
         );
 
         // update the associations
@@ -90,6 +77,7 @@ const FishingTrip = {
 
             await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
             await FishingTrip.associateTripToBoat(id, boat);
+            result.rows[0].boat = boat;
         }
         if (organiser) {
             await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
@@ -97,17 +85,7 @@ const FishingTrip = {
 
             await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
             await FishingTrip.associateTripToUser(id, organiser);
-        }
-        if (passengers) {
-            for (const passenger of passengers) {
-                await GeneralCheckers.checkUserExistsById(passenger, 'Passager(s)');
-            }
-            await SpecificCheckers.checkBoatCapacity(currentTrip.boat, passengers);
-
-            await pool.query('DELETE FROM trip_passengers WHERE trip_id = $1', [id]);
-            for (const passenger of passengers) {
-                await FishingTrip.associateTripToPassenger(id, passenger);
-            }
+            result.rows[0].organiser = organiser;
         }
 
         return result.rows[0];
@@ -121,7 +99,6 @@ const FishingTrip = {
         await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
         await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
         await pool.query('DELETE FROM trip_reservations WHERE trip_id = $1', [id]);
-        await pool.query('DELETE FROM trip_passengers WHERE trip_id = $1', [id]);
 
         const result = await pool.query('DELETE FROM trips WHERE id = $1', [id]);
         return result.rowCount;
@@ -141,16 +118,6 @@ const FishingTrip = {
     },
 
     getAllTrips: async (filters) => {
-        // if organizerId provided, check if exists
-        if (filters.organiserId) {
-            await GeneralCheckers.checkUserExistsById(filters.organiserId, 'Organisateur');
-        }
-
-        // if boatId provided, check if exists
-        if (filters.boatId) {
-            await GeneralCheckers.checkBoatExists(filters.boatId);
-        }
-
         // base query
         let query = `
             SELECT DISTINCT t.*
@@ -173,11 +140,13 @@ const FishingTrip = {
             parameterIndex++;
         }
         if (filters.organiserId) {
+            await GeneralCheckers.checkUserExistsById(filters.organiserId, 'Organisateur');
             query += ` AND ut.user_id = $${parameterIndex}`;
             values.push(filters.organiserId);
             parameterIndex++;
         }
         if (filters.boatId) {
+            await GeneralCheckers.checkBoatExists(filters.boatId);
             query += ` AND tb.boat_id = $${parameterIndex}`;
             values.push(filters.boatId);
             parameterIndex++;
@@ -207,8 +176,9 @@ const FishingTrip = {
     },
 
     fetchTripPassengers: async (tripId) => {
-        const passengers = await pool.query('SELECT user_id FROM user_trips WHERE trip_id = $1', [tripId]);
-        return passengers.rows.map(p => p.user_id);
+        const passengers = await pool.query('SELECT SUM(nb_places) FROM reservations r JOIN trip_reservations tr ON r.id = tr.reservation_id WHERE tr.trip_id = $1', [tripId]);
+        if (!passengers.rows[0].sum) return 0;
+        return parseInt(passengers.rows[0].sum);
     },
 
     associateTripToBoat: async (tripId, boatId) => {
@@ -217,10 +187,6 @@ const FishingTrip = {
 
     associateTripToUser: async (tripId, userId) => {
         await pool.query('INSERT INTO user_trips (trip_id, user_id) VALUES ($1, $2)', [tripId, userId]);
-    },
-
-    associateTripToPassenger: async (tripId, userId) => {
-        await pool.query('INSERT INTO trip_passengers (trip_id, user_id) VALUES ($1, $2)', [tripId, userId]);
     },
 
 };

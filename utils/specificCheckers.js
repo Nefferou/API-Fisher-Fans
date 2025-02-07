@@ -23,7 +23,7 @@ const SpecificCheckers = {
 
     async checkBoatCapacity(boatId, passengers) {
         const boat = await pool.query('SELECT max_capacity FROM boats WHERE id = $1', [boatId]);
-        if (boat.rows[0].max_capacity < passengers.length) {
+        if (boat.rows[0].max_capacity < passengers) {
             throw new AppError('Capacité du bateau insuffisante', 403);
         }
     }

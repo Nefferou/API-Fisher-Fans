@@ -95,11 +95,6 @@ const Boat = {
         const values = [];
         const conditions = [];
 
-        // if ownerId mentioned, check if the user exists
-        if (filters.ownerId) {
-            await GeneralCheckers.checkUserExistsById(filters.ownerId, 'Propriétaire');
-        }
-
         // filters minLatitude, maxLatitude, minLongitude, maxLongitude (ownerId is in another table)
         Object.entries(filters).forEach(([key, value]) => {
             if (key === 'minLatitude') {

@@ -973,12 +973,6 @@ components:
           type: string
           format: time
           description: Heure de fin de la sortie de pêche
-        passengers:
-          type: array
-          description: Liste des passagers de la sortie de pêche
-          items:
-            type: integer
-            description: Identifiant de l'utilisateur
         price:
           type: integer
           description: Prix de la sortie de pêche
