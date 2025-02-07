@@ -36,6 +36,8 @@ const Boat = {
              WHERE id = $13 RETURNING *`,
             [name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, id]
         );
+        await pool.query('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
+        await pool.query('DELETE FROM user_boats WHERE boat_id = $1', [id]);
         await Boat.associateBoatToUser(result.rows[0].id, owner);
         await Boat.associateEquipmentToBoat(result.rows[0].id, equipments);
         return result.rows[0];
@@ -55,6 +57,7 @@ const Boat = {
             equipments.forEach(equipment => {
                 GeneralCheckers.checkEquipmentExists(equipment);
             });
+            await pool.query('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
             await Boat.associateEquipmentToBoat(result.rows[0].id, equipments);
         }
         return result.rows[0];

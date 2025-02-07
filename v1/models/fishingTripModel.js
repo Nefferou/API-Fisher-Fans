@@ -35,8 +35,8 @@ const FishingTrip = {
 
         const result = await pool.query(
             `UPDATE trips SET information = $1, type = $2, price = $3, cost_type = $4, begin_date = $5, end_date = $6, begin_time = $7, end_time = $8
-             WHERE id = $10 RETURNING *`,
-            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time]
+             WHERE id = $9 RETURNING *`,
+            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time, id]
         );
 
         // update the associations
@@ -65,7 +65,7 @@ const FishingTrip = {
                  end_date = COALESCE($6, end_date),
                  begin_time = COALESCE($7, begin_time),
                  end_time = COALESCE($8, end_time)
-             WHERE id = $7 RETURNING *`,
+             WHERE id = $9 RETURNING *`,
             [information, type, price, cost_type, begin_date, end_date, begin_time, end_time, id]
         );
 
