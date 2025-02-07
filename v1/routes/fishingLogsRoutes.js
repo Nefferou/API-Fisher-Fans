@@ -8,6 +8,9 @@ router.post('/', fishingLogController.createLog);
 // Route to update a fishing log by ID
 router.put('/:id', fishingLogController.updateLog);
 
+// Route to patch a fishing log by ID
+router.patch('/:id', fishingLogController.patchLog);
+
 // Route to delete a fishing log by ID
 router.delete('/:id', fishingLogController.deleteLog);
 

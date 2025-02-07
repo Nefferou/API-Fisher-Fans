@@ -851,6 +851,112 @@ paths:
         '500':
           description: Erreur serveur
 
+  /v1/fishing-logs/{logId}:
+    get:
+      tags:
+        - fishing log
+      summary: Récupérer un carnet de pêche par son ID
+      parameters:
+        - in: path
+          name: logId
+          required: true
+          schema:
+            type: string
+          description: ID unique du carnet de pêche
+      responses:
+        '200':
+          description: Détails du carnet de pêche récupérés avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FishingLog'
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+          description: Carnet de pêche non trouvé
+        '500':
+          description: Erreur serveur
+    put:
+      tags:
+        - fishing log
+      summary: Mettre à jour un carnet de pêche par son ID
+      parameters:
+        - in: path
+          name: logId
+          required: true
+          schema:
+            type: string
+          description: ID unique du carnet de pêche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FishingLog'
+      responses:
+        '200':
+          description: Carnet de pêche mis à jour avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+          description: Carnet de pêche non trouvé
+        '500':
+          description: Erreur serveur
+    patch:
+      tags:
+        - fishing log
+      summary: Mettre à jour partiellement un carnet de pêche par son ID
+      parameters:
+        - in: path
+          name: logId
+          required: true
+          schema:
+            type: string
+          description: ID unique du carnet de pêche
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FishingLog'
+      responses:
+        '200':
+          description: Carnet de pêche mis à jour avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+          description: Carnet de pêche non trouvé
+        '500':
+          description: Erreur serveur
+    delete:
+      tags:
+        - fishing log
+      summary: Supprimer un carnet de pêche par son ID
+      parameters:
+        - in: path
+          name: logId
+          required: true
+          schema:
+            type: string
+          description: ID unique du carnet de pêche
+      responses:
+        '204':
+          description: Carnet de pêche supprimé avec succès
+        '400':
+          description: Requête invalide
+        '401':
+          description: Non authentifié
+        '404':
+          description: Carnet de pêche non trouvé
+        '500':
+          description: Erreur serveur
+
 components:
   securitySchemes:
     bearerAuth:
