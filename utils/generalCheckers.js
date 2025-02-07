@@ -49,6 +49,13 @@ const GeneralCheckers = {
         if (reservation.rowCount === 0) {
             throw new AppError('Réservation non trouvée', 404);
         }
+    },
+
+    async checkLogExists(logId) {
+        const log = await pool.query('SELECT * FROM fishing_logs WHERE id = $1', [logId]);
+        if (log.rowCount === 0) {
+            throw new AppError('Carnet de pêche non trouvé', 404);
+        }
     }
 }
 
