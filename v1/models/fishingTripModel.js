@@ -1,61 +1,56 @@
-const pool = require('../../dbConfig');
+const BaseModel = require("./baseModel");
 const GeneralCheckers = require('../../utils/generalCheckers');
 const SpecificCheckers = require('../../utils/specificCheckers');
 
-const FishingTrip = {
-    createTrip: async (data) => {
+class FishingTrip extends BaseModel {
+    static async createTrip (data) {
         const { information, type, price, cost_type, begin_date, end_date, begin_time, end_time, boat, organiser } = data;
 
-        // Check if the organizer, boat, if the organizer owns the boat
         await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
         await GeneralCheckers.checkBoatExists(boat);
         await SpecificCheckers.checkOwnership(organiser, boat);
 
-        const result = await pool.query(
+        const result = await this.querySingle(
             `INSERT INTO trips (information, type, price, cost_type, begin_date, end_date, begin_time, end_time)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
             [information, type, price, cost_type, begin_date, end_date, begin_time, end_time]
         );
 
-        // make the associations
-        await FishingTrip.associateTripToBoat(result.rows[0].id, boat);
-        await FishingTrip.associateTripToUser(result.rows[0].id, organiser);
+        await this.associateTripToBoat(result.id, boat);
+        await this.associateTripToUser(result.id, organiser);
 
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    updateTrip: async (id, data) => {
+    static async updateTrip (id, data) {
         const { information, type, price, cost_type, begin_date, end_date, begin_time, end_time, boat, organiser } = data;
 
-        // Check if the trip, organizer, boat, if the organizer owns the boat and if the boat has enough capacity
         await GeneralCheckers.checkTripExists(id);
         await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
         await GeneralCheckers.checkBoatExists(boat);
         await SpecificCheckers.checkOwnership(organiser, boat);
 
-        const result = await pool.query(
+        const result = await this.querySingle(
             `UPDATE trips SET information = $1, type = $2, price = $3, cost_type = $4, begin_date = $5, end_date = $6, begin_time = $7, end_time = $8
-             WHERE id = $10 RETURNING *`,
-            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time]
+             WHERE id = $9 RETURNING *`,
+            [information, type, price, cost_type, begin_date, end_date, begin_time, end_time, id]
         );
 
-        // update the associations
-        await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
-        await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
-        await FishingTrip.associateTripToBoat(id, boat);
-        await FishingTrip.associateTripToUser(id, organiser);
+        await this.querySingle('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
+        await this.querySingle('DELETE FROM user_trips WHERE trip_id = $1', [id]);
+        await this.associateTripToBoat(id, boat);
+        await this.associateTripToUser(id, organiser);
 
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    patchTrip: async (id, data) => {
-        // Check if the trip exists
+    static async patchTrip (id, data) {
         await GeneralCheckers.checkTripExists(id);
 
-        const currentTrip = await FishingTrip.getTrip(id);
+        const currentTrip = await this.getTrip(id);
 
         const { information, type, price, cost_type, begin_date, end_date, begin_time, end_time, boat, organiser } = data;
-        const result = await pool.query(
+        const result = await this.querySingle(
             `UPDATE trips
              SET information = COALESCE($1, information), 
                  type = COALESCE($2, type), 
@@ -65,59 +60,52 @@ const FishingTrip = {
                  end_date = COALESCE($6, end_date),
                  begin_time = COALESCE($7, begin_time),
                  end_time = COALESCE($8, end_time)
-             WHERE id = $7 RETURNING *`,
+             WHERE id = $9 RETURNING *`,
             [information, type, price, cost_type, begin_date, end_date, begin_time, end_time, id]
         );
 
-        // update the associations
         if (boat) {
             await GeneralCheckers.checkBoatExists(boat);
             await SpecificCheckers.checkOwnership(currentTrip.organiser, boat);
 
-            await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
-            await FishingTrip.associateTripToBoat(id, boat);
-            result.rows[0].boat = boat;
+            await this.querySingle('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
+            await this.associateTripToBoat(id, boat);
+            result.boat = boat;
         }
         if (organiser) {
             await GeneralCheckers.checkUserExistsById(organiser, 'Organisateur');
             await SpecificCheckers.checkOwnership(organiser, currentTrip.boat);
 
-            await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
-            await FishingTrip.associateTripToUser(id, organiser);
-            result.rows[0].organiser = organiser;
+            await this.querySingle('DELETE FROM user_trips WHERE trip_id = $1', [id]);
+            await this.associateTripToUser(id, organiser);
+            result.organiser = organiser;
         }
 
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    deleteTrip: async (id) => {
-        // Check if the trip exists
+    static async deleteTrip (id) {
         await GeneralCheckers.checkTripExists(id);
 
-        // delete the associated data first
-        await pool.query('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
-        await pool.query('DELETE FROM user_trips WHERE trip_id = $1', [id]);
-        await pool.query('DELETE FROM trip_reservations WHERE trip_id = $1', [id]);
+        await this.querySingle('DELETE FROM trip_boat WHERE trip_id = $1', [id]);
+        await this.querySingle('DELETE FROM user_trips WHERE trip_id = $1', [id]);
+        await this.querySingle('DELETE FROM trip_reservations WHERE trip_id = $1', [id]);
 
-        const result = await pool.query('DELETE FROM trips WHERE id = $1', [id]);
-        return result.rowCount;
-    },
+        return await this.querySingle('DELETE FROM trips WHERE id = $1', [id]);
+    }
 
-    getTrip: async (id) => {
-        // Check if the trip exists
+    static async getTrip (id) {
         await GeneralCheckers.checkTripExists(id);
 
-        const result = await pool.query('SELECT * FROM trips WHERE id = $1', [id]);
+        const result = await this.querySingle('SELECT * FROM trips WHERE id = $1', [id]);
 
-        // fetch the associated data
-        result.rows[0].organiser = await FishingTrip.fetchTripOrganiser(id);
-        result.rows[0].boat = await FishingTrip.fetchTripBoat(id);
-        result.rows[0].passengers = await FishingTrip.fetchTripPassengers(id);
-        return result.rows[0];
-    },
+        result.organiser = await this.fetchTripOrganiser(id);
+        result.boat = await this.fetchTripBoat(id);
+        result.passengers = await this.fetchTripPassengers(id);
+        return result;
+    }
 
-    getAllTrips: async (filters) => {
-        // base query
+    static async getAllTrips (filters) {
         let query = `
             SELECT DISTINCT t.*
             FROM trips t
@@ -151,43 +139,41 @@ const FishingTrip = {
             parameterIndex++;
         }
 
-        // execute the query
-        const result = await pool.query(query, values);
+        const result = await this.query(query, values);
 
         // fetch the associated data
-        for (const trip of result.rows) {
-            trip.organiser = await FishingTrip.fetchTripOrganiser(trip.id);
-            trip.boat = await FishingTrip.fetchTripBoat(trip.id);
-            trip.passengers = await FishingTrip.fetchTripPassengers(trip.id);
+        for (const trip of result) {
+            trip.organiser = await this.fetchTripOrganiser(trip.id);
+            trip.boat = await this.fetchTripBoat(trip.id);
+            trip.passengers = await this.fetchTripPassengers(trip.id);
         }
 
-        return result.rows;
-    },
+        return result;
+    }
 
-    fetchTripOrganiser: async (tripId) => {
-        const organizer = await pool.query('SELECT user_id FROM user_trips WHERE trip_id = $1', [tripId]);
-        return organizer.rows[0].user_id;
-    },
+    static async fetchTripOrganiser (tripId) {
+        const organizer = await this.querySingle('SELECT user_id FROM user_trips WHERE trip_id = $1', [tripId]);
+        return organizer.user_id;
+    }
 
-    fetchTripBoat: async (tripId) => {
-        const boat = await pool.query('SELECT boat_id FROM trip_boat WHERE trip_id = $1', [tripId]);
-        return boat.rows[0].boat_id;
-    },
+    static async fetchTripBoat (tripId) {
+        const boat = await this.querySingle('SELECT boat_id FROM trip_boat WHERE trip_id = $1', [tripId]);
+        return boat.boat_id;
+    }
 
-    fetchTripPassengers: async (tripId) => {
-        const passengers = await pool.query('SELECT SUM(nb_places) FROM reservations r JOIN trip_reservations tr ON r.id = tr.reservation_id WHERE tr.trip_id = $1', [tripId]);
-        if (!passengers.rows[0].sum) return 0;
-        return parseInt(passengers.rows[0].sum);
-    },
+    static async fetchTripPassengers (tripId){
+        const passengers = await this.querySingle('SELECT SUM(nb_places) FROM reservations r JOIN trip_reservations tr ON r.id = tr.reservation_id WHERE tr.trip_id = $1', [tripId]);
+        if (!passengers.sum) return 0;
+        return parseInt(passengers.sum);
+    }
 
-    associateTripToBoat: async (tripId, boatId) => {
-        await pool.query('INSERT INTO trip_boat (trip_id, boat_id) VALUES ($1, $2)', [tripId, boatId]);
-    },
+    static async associateTripToBoat (tripId, boatId) {
+        await this.querySingle('INSERT INTO trip_boat (trip_id, boat_id) VALUES ($1, $2)', [tripId, boatId]);
+    }
 
-    associateTripToUser: async (tripId, userId) => {
-        await pool.query('INSERT INTO user_trips (trip_id, user_id) VALUES ($1, $2)', [tripId, userId]);
-    },
-
-};
+    static async associateTripToUser (tripId, userId) {
+        await this.querySingle('INSERT INTO user_trips (trip_id, user_id) VALUES ($1, $2)', [tripId, userId]);
+    }
+}
 
 module.exports = FishingTrip;

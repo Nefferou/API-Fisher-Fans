@@ -1,52 +1,51 @@
-const pool = require('../../dbConfig');
+const BaseModel = require("./baseModel");
 const GeneralCheckers = require('../../utils/generalCheckers');
 const SpecificCheckers = require('../../utils/specificCheckers');
 
-const Boat = {
-    createBoat: async (data) => {
+class Boat extends BaseModel {
+    static async createBoat (data){
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
-        // Checkers
         await GeneralCheckers.checkUserExistsById(owner, 'Propriétaire');
         await SpecificCheckers.checkUserBoatLicense(owner, licence_type);
         equipments.forEach(equipment => {
             GeneralCheckers.checkEquipmentExists(equipment);
         });
 
-        const result = await pool.query(
+        const result = await this.querySingle(
             `INSERT INTO boats (name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power)
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) RETURNING *`,
             [name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power]
         );
-        await Boat.associateBoatToUser(result.rows[0].id, owner);
-        await Boat.associateEquipmentToBoat(result.rows[0].id, equipments);
-        return result.rows[0];
-    },
+        await this.associateBoatToUser(result.id, owner);
+        await this.associateEquipmentToBoat(result.id, equipments);
+        return result;
+    }
 
-    updateBoat: async (id, data) => {
+    static async updateBoat (id, data){
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, owner, equipments } = data;
-        // Checkers
         await GeneralCheckers.checkBoatExists(id);
         await SpecificCheckers.checkUserBoatLicense(owner, licence_type);
         equipments.forEach(equipment => {
             GeneralCheckers.checkEquipmentExists(equipment);
         });
 
-        const result = await pool.query(
+        const result = await this.querySingle(
             `UPDATE boats SET name = $1, description = $2, boat_type = $3, picture = $4, licence_type = $5, bail = $6, max_capacity = $7, city = $8, longitude = $9, latitude = $10, motor_type = $11, motor_power = $12
              WHERE id = $13 RETURNING *`,
             [name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, id]
         );
-        await Boat.associateBoatToUser(result.rows[0].id, owner);
-        await Boat.associateEquipmentToBoat(result.rows[0].id, equipments);
-        return result.rows[0];
-    },
+        await this.querySingle('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
+        await this.querySingle('DELETE FROM user_boats WHERE boat_id = $1', [id]);
+        await this.associateBoatToUser(result.id, owner);
+        await this.associateEquipmentToBoat(result.id, equipments);
+        return result;
+    }
 
-    patchBoat: async (id, data) => {
-        // Check if the boat exists
+    static async patchBoat (id, data){
         await GeneralCheckers.checkBoatExists(id);
 
         const { name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, equipments } = data;
-        const result = await pool.query(
+        const result = await this.querySingle(
             `UPDATE boats SET name = COALESCE($1, name), description = COALESCE($2, description), boat_type = COALESCE($3, boat_type), picture = COALESCE($4, picture), licence_type = COALESCE($5, licence_type), bail = COALESCE($6, bail), max_capacity = COALESCE($7, max_capacity), city = COALESCE($8, city), longitude = COALESCE($9, longitude), latitude = COALESCE($10, latitude), motor_type = COALESCE($11, motor_type), motor_power = COALESCE($12, motor_power)
              WHERE id = $13 RETURNING *`,
             [name, description, boat_type, picture, licence_type, bail, max_capacity, city, longitude, latitude, motor_type, motor_power, id]
@@ -55,47 +54,37 @@ const Boat = {
             equipments.forEach(equipment => {
                 GeneralCheckers.checkEquipmentExists(equipment);
             });
-            await Boat.associateEquipmentToBoat(result.rows[0].id, equipments);
+            await this.querySingle('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
+            await this.associateEquipmentToBoat(result.id, equipments);
         }
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    deleteBoat: async (id) => {
-        // Check if the boat exists
+    static async deleteBoat (id){
         await GeneralCheckers.checkBoatExists(id);
 
-        // Delete the boat from the boat_equipments table first
-        await pool.query('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
+        await this.querySingle('DELETE FROM boat_equipments WHERE boat_id = $1', [id]);
+        await this.querySingle('DELETE FROM user_boats WHERE boat_id = $1', [id]);
 
-        // Delete the boat from the user_boats table first
-        await pool.query('DELETE FROM user_boats WHERE boat_id = $1', [id]);
+        return await this.querySingle('DELETE FROM boats WHERE id = $1', [id]);
+    }
 
-        const result = await pool.query('DELETE FROM boats WHERE id = $1', [id]);
-        return result.rowCount;
-    },
-
-    getBoat: async (id) => {
-        // Check if the boat exists
+    static async getBoat (id){
         await GeneralCheckers.checkBoatExists(id);
 
-        const result = await pool.query('SELECT * FROM boats WHERE id = $1', [id]);
+        const result = await this.querySingle('SELECT * FROM boats WHERE id = $1', [id]);
 
-        // Fetch the equipments for the boat
-        result.rows[0].equipments = await Boat.fetchBoatEquipments(id);
+        result.equipments = await this.fetchBoatEquipments(id);
+        result.owner = await this.fetchBoatOwner(id);
 
-        // Fetch the owner for the boat
-        result.rows[0].owner = await Boat.fetchBoatOwner(id);
+        return result;
+    }
 
-        return result.rows[0];
-    },
-
-    getAllBoats: async (filters) => {
-        // base query
+    static async getAllBoats (filters){
         let query = 'SELECT * FROM boats';
         const values = [];
         const conditions = [];
 
-        // filters minLatitude, maxLatitude, minLongitude, maxLongitude (ownerId is in another table)
         Object.entries(filters).forEach(([key, value]) => {
             if (key === 'minLatitude') {
                 conditions.push(`latitude >= $${values.length + 1}`);
@@ -112,14 +101,11 @@ const Boat = {
             }
         });
 
-        // add conditions for the location to the query
         if (conditions.length > 0) {
             query += ' WHERE ' + conditions.join(' AND ');
         }
 
-        // join with the user_boats table to filter by ownerId if mentioned
         if (filters.ownerId) {
-            // check if user exists
             await GeneralCheckers.checkUserExistsById(filters.ownerId, 'Propriétaire');
 
             query += conditions.length > 0 ? ' AND ' : ' WHERE ';
@@ -127,71 +113,64 @@ const Boat = {
             values.push(filters.ownerId);
         }
 
-        // execute the query
-        const result = await pool.query(query, values);
+        const result = await this.query(query, values);
 
-        // Fetch the equipments for each boat
-        for (const boat of result.rows) {
-            boat.equipments = await Boat.fetchBoatEquipments(boat.id);
+        for (const boat of result) {
+            boat.equipments = await this.fetchBoatEquipments(boat.id);
         }
 
-        // Fetch the owner for each boat
-        for (const boat of result.rows) {
-            boat.owner = await Boat.fetchBoatOwner(boat.id);
+        for (const boat of result) {
+            boat.owner = await this.fetchBoatOwner(boat.id);
         }
 
-        return result.rows;
-    },
+        return result;
+    }
 
-    fetchBoatOwner: async (boatId) => {
-        const owner = await pool.query('SELECT user_id FROM user_boats WHERE boat_id = $1', [boatId]);
-        return owner.rows[0].user_id;
-    },
+    static async fetchBoatOwner (boatId){
+        const owner = await this.querySingle('SELECT user_id FROM user_boats WHERE boat_id = $1', [boatId]);
+        return owner.user_id;
+    }
 
-    fetchBoatEquipments: async (boatId) => {
-        const equipments = await pool.query(
+    static async fetchBoatEquipments (boatId){
+        const equipments = await this.query(
             `SELECT e.* FROM equipments e
              JOIN boat_equipments be ON e.id = be.equipment_id
              WHERE be.boat_id = $1`,
             [boatId]
         );
-        return equipments.rows.map(equipment => equipment.id);
-    },
+        return equipments.map(equipment => equipment.id);
+    }
 
-    associateBoatToUser: async (boatId, userId) => {
-        await pool.query(
+    static async associateBoatToUser (boatId, userId){
+        await this.querySingle(
             `INSERT INTO user_boats (boat_id, user_id)
              VALUES ($1, $2) RETURNING *`,
             [boatId, userId]
         );
-    },
+    }
 
-    associateEquipmentToBoat: async (boatId, equipments) => {
-        // Check existing equipments to avoid duplicates in the boat_equipments table
-        const existingEquipments = await pool.query('SELECT * FROM boat_equipments WHERE boat_id = $1', [boatId]);
-        const existingEquipmentsIds = existingEquipments.rows.map(equipment => equipment.equipment_id);
+    static async associateEquipmentToBoat (boatId, equipments) {
+        const existingEquipments = await this.query('SELECT * FROM boat_equipments WHERE boat_id = $1', [boatId]);
+        const existingEquipmentsIds = existingEquipments.map(equipment => equipment.equipment_id);
 
-        // Fetch the equipments IDS
         const equipmentsIds = [];
         for (const equipment of equipments) {
-            const result = await pool.query('SELECT id FROM equipments WHERE name = $1', [equipment]);
+            const result = await this.querySingle('SELECT id FROM equipments WHERE name = $1', [equipment]);
             if (result.rowCount > 0) {
-                equipmentsIds.push(result.rows[0].id);
+                equipmentsIds.push(result.id);
             }
         }
 
-        // Filter out existing equipments from the equipments array
         const newEquipments = equipmentsIds.filter(equipment => !existingEquipmentsIds.includes(equipment));
 
-        // Insert new equipments in the boat_equipments table
         for (const equipmentId of newEquipments) {
-            await pool.query(
+            await this.querySingle(
                 `INSERT INTO boat_equipments (boat_id, equipment_id)
                  VALUES ($1, $2)`,
                 [boatId, equipmentId]
             );
         }
     }
-};
+}
 
 module.exports = Boat;

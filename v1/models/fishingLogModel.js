@@ -1,45 +1,45 @@
-const pool = require('../../dbConfig');
+const BaseModel = require("./baseModel");
 const GeneralCheckers = require('../../utils/generalCheckers');
 
-const FishingLog = {
-    createLog: async (data) => {
+class FishingLog extends BaseModel {
+    static async createLog (data) {
         const { fish_name, picture, comment, height, weight, location, date, freed, owner } = data;
 
         await GeneralCheckers.checkUserExistsById(owner);
 
-        const result = await pool.query(
+        const result = await this.querySingle(
             `INSERT INTO fishing_logs (fish_name, picture, comment, height, weight, location, date, freed)
             VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
             [fish_name, picture, comment, height, weight, location, date, freed]
         );
 
-        await FishingLog.associateLogToUser(result.rows[0].id, owner);
+        await this.associateLogToUser(result.id, owner);
 
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    updateLog: async (id, data) => {
+    static async updateLog (id, data){
         const { fish_name, picture, comment, height, weight, location, date, freed, owner } = data;
 
         await GeneralCheckers.checkLogExists(id);
 
-        const result = await pool.query(
+        const result = await this.querySingle(
             `UPDATE fishing_logs SET fish_name = $1, picture = $2, comment = $3, height = $4, weight = $5, location = $6, date = $7, freed = $8
             WHERE id = $9 RETURNING *`,
             [fish_name, picture, comment, height, weight, location, date, freed, id]
         );
 
-        await pool.query('DELETE FROM user_logs WHERE log_id = $1', [id]);
-        await FishingLog.associateLogToUser(id, owner);
+        await this.querySingle('DELETE FROM user_logs WHERE log_id = $1', [id]);
+        await this.associateLogToUser(id, owner);
 
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    patchLog: async (id, data) => {
+    static async patchLog (id, data){
         await GeneralCheckers.checkLogExists(id);
 
         const { fish_name, picture, comment, height, weight, location, date, freed, owner } = data;
-        const result = await pool.query(
+        const result = await this.querySingle(
             `UPDATE fishing_logs
             SET fish_name = COALESCE($1, fish_name), picture = COALESCE($2, picture), comment = COALESCE($3, comment),
             height = COALESCE($4, height), weight = COALESCE($5, weight), location = COALESCE($6, location),
@@ -50,28 +50,27 @@ const FishingLog = {
 
         if (owner) {
             await GeneralCheckers.checkUserExistsById(owner);
-            await pool.query('DELETE FROM user_logs WHERE log_id = $1', [id]);
-            await FishingLog.associateLogToUser(id, owner);
+            await this.querySingle('DELETE FROM user_logs WHERE log_id = $1', [id]);
+            await this.associateLogToUser(id, owner);
         }
 
-        return result.rows[0];
-    },
+        return result;
+    }
 
-    deleteLog: async (id) => {
+    static async deleteLog (id){
         await GeneralCheckers.checkLogExists(id);
-        await pool.query('DELETE FROM user_logs WHERE log_id = $1', [id]);
-        const result = await pool.query('DELETE FROM fishing_logs WHERE id = $1', [id]);
-        return result.rowCount;
-    },
+        await this.querySingle('DELETE FROM user_logs WHERE log_id = $1', [id]);
+        return await this.querySingle('DELETE FROM fishing_logs WHERE id = $1', [id]);
+    }
 
-    getLog: async (id) => {
+    static async getLog (id) {
         await GeneralCheckers.checkLogExists(id);
-        const result = await pool.query('SELECT * FROM fishing_logs WHERE id = $1', [id]);
-        result.rows[0].user = await FishingLog.fetchLogOwner(id);
-        return result.rows[0];
-    },
+        const result = await this.querySingle('SELECT * FROM fishing_logs WHERE id = $1', [id]);
+        result.user = await this.fetchLogOwner(id);
+        return result;
+    }
 
-    getAllLogs: async (filters) => {
+    static async getAllLogs (filters) {
         let query = 'SELECT * FROM fishing_logs';
         const values = [];
 
@@ -94,23 +93,23 @@ const FishingLog = {
         }
 
 
-        const result = await pool.query(query, values);
+        const result = await this.query(query, values);
 
-        for (const log of result.rows) {
-            log.user = await FishingLog.fetchLogOwner(log.id);
+        for (const log of result) {
+            log.user = await this.fetchLogOwner(log.id);
         }
 
-        return result.rows;
-    },
-
-    fetchLogOwner: async (logId) => {
-        const owner = await pool.query('SELECT user_id FROM user_logs WHERE log_id = $1', [logId]);
-        return owner.rows[0].user_id;
-    },
-
-    associateLogToUser: async (logId, userId) => {
-        await pool.query('INSERT INTO user_logs (user_id, log_id) VALUES ($1, $2)', [userId, logId]);
+        return result;
     }
-};
+
+    static async fetchLogOwner (logId) {
+        const owner = await this.querySingle('SELECT user_id FROM user_logs WHERE log_id = $1', [logId]);
+        return owner.user_id;
+    }
+
+    static async associateLogToUser (logId, userId){
+        await this.querySingle('INSERT INTO user_logs (user_id, log_id) VALUES ($1, $2)', [userId, logId]);
+    }
+}
 
 module.exports = FishingLog;
