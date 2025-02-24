@@ -10,7 +10,6 @@ exports.createUser = async (req, res) => {
         res.status(200).json(user);
     }
     catch (err) {
-        console.error(err);
         if (err instanceof AppError) res.status(err.statusCode).send(err.message);
         else res.status(500).send('Erreur lors de la création de l\'utilisateur');
     }
@@ -21,7 +20,6 @@ exports.updateUser = async (req, res) => {
         const updatedUser = await User.updateUser(req.params.id, req.body);
         res.status(200).json(updatedUser);
     } catch (err) {
-        console.error(err);
         if (err instanceof AppError) res.status(err.statusCode).send(err.message);
         else res.status(500).send('Erreur lors de la mise à jour de l\'utilisateur');
     }
@@ -32,7 +30,6 @@ exports.patchUser = async (req, res) => {
         const patchedUser = await User.patchUser(req.params.id, req.body);
         res.status(200).json(patchedUser);
     } catch (err) {
-        console.error(err);
         if (err instanceof AppError) res.status(err.statusCode).send(err.message);
         else res.status(500).send('Erreur lors de la mise à jour de l\'utilisateur');
     }
@@ -43,7 +40,6 @@ exports.deleteUser = async (req, res) => {
         await User.deleteUser(req.params.id);
         res.status(204).send('Utilisateur supprimé avec succès');
     } catch (err) {
-        console.error(err);
         if (err instanceof AppError) res.status(err.statusCode).send(err.message);
         else res.status(500).send('Erreur lors de la suppression de l\'utilisateur');
     }
@@ -54,7 +50,6 @@ exports.getUser = async (req, res) => {
         const user = await User.getUser(req.params.id);
         res.status(200).json(user);
     } catch (err) {
-        console.error(err);
         if (err instanceof AppError) res.status(err.statusCode).send(err.message);
         else res.status(500).send('Erreur lors de la récupération de l\'utilisateur');
     }
@@ -74,7 +69,6 @@ exports.getAllUsers = async (req, res) => {
         const users = await User.getAllUsers(filteredFilters);
         res.json(users);
     } catch (err) {
-        console.error(err);
         if (err instanceof AppError) res.status(err.statusCode).send(err.message);
         else res.status(500).send('Erreur lors de la récupération des utilisateurs');
     }
