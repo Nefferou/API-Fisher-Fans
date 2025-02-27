@@ -1,6 +1,6 @@
 const pool = require('../../dbConfig');
 
-class BaseModel {
+class BaseRepository {
     static async query(sql, params) {
         const result = await pool.query(sql, params);
         return result.rows;
@@ -12,4 +12,4 @@ class BaseModel {
     }
 }
 
-module.exports = BaseModel;
+module.exports = BaseRepository;
