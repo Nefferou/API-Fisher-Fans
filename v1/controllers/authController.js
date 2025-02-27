@@ -1,4 +1,4 @@
-const User= require("../models/userModel");
+const User= require("../services/userService");
 const catchAsync = require('../../utils/catchAsync');
 const jwt = require("jsonwebtoken");
 const {comparePassword} = require("../../utils/bcryptEssentials");

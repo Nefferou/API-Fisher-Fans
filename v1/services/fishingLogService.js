@@ -46,27 +46,11 @@ class FishingLog {
     }
 
     static async getAllLogs (filters) {
-        let query = 'SELECT * FROM fishing_logs';
-        const values = [];
-
         if (filters.ownerId) {
             await GeneralCheckers.checkUserExistsById(filters.ownerId);
         }
 
-        if (Object.keys(filters).length > 0) {
-            query += ' WHERE';
-            Object.keys(filters).forEach((key, index) => {
-                if (key === 'ownerId') {
-                    query += ` id IN (SELECT log_id FROM user_logs WHERE user_id = $${index + 1})`;
-                } else {
-                    query += ` ${key} = $${index + 1}`;
-                }
-                values.push(filters[key]);
-                if (index < Object.keys(filters).length - 1) query += ' AND';
-            });
-        }
-
-        const result = await FishingLogRepository.getAllLogs(query, values);
+        const result = await FishingLogRepository.getAllLogs(filters);
 
         for (const log of result) {
             log.owner = await FishingLogRepository.fetchLogOwner(log.id);

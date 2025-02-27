@@ -38,7 +38,31 @@ class BoatRepository extends BaseRepository {
         return await this.querySingle('SELECT * FROM boats WHERE id = $1', [id]);
     }
 
-    static async getAllBoats(query, values) {
+    static async getAllBoats(filters) {
+        let query = 'SELECT * FROM boats';
+        const values = [];
+        const conditions = [];
+
+        const addCondition = (key, operator, value) => {
+            conditions.push(`${key} ${operator} $${values.length + 1}`);
+            values.push(value);
+        };
+
+        if (filters.minLatitude) addCondition('latitude', '>=', filters.minLatitude);
+        if (filters.maxLatitude) addCondition('latitude', '<=', filters.maxLatitude);
+        if (filters.minLongitude) addCondition('longitude', '>=', filters.minLongitude);
+        if (filters.maxLongitude) addCondition('longitude', '<=', filters.maxLongitude);
+
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        if (filters.ownerId) {
+            query += conditions.length > 0 ? ' AND ' : ' WHERE ';
+            query += 'id IN (SELECT boat_id FROM user_boats WHERE user_id = $' + (values.length + 1) + ')';
+            values.push(filters.ownerId);
+        }
+
         return await this.query(query, values);
     }
 

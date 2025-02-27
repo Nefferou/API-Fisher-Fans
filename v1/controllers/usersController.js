@@ -1,4 +1,4 @@
-const User = require('../models/userModel');
+const User = require('../services/userService');
 const catchAsync = require('../../utils/catchAsync');
 const {hashPassword} = require('../../utils/bcryptEssentials');
 

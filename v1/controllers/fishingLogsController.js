@@ -1,4 +1,4 @@
-const FishingLog = require('../models/fishingLogModel');
+const FishingLog = require('../services/fishingLogService');
 const catchAsync = require('../../utils/catchAsync');
 
 exports.createLog = catchAsync(async (req, res) => {

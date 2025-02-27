@@ -1,4 +1,4 @@
-const Boat = require('../models/boatModel');
+const Boat = require('../services/boatService');
 const catchAsync = require('../../utils/catchAsync');
 
 exports.createBoat = catchAsync(async (req, res) => {

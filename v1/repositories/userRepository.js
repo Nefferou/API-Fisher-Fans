@@ -62,7 +62,20 @@ class UserRepository extends BaseRepository {
         return await this.querySingle('SELECT * FROM users WHERE email = $1', [email]);
     }
 
-    static async getAllUsers(query, values) {
+    static async getAllUsers(filters) {
+        let query = 'SELECT * FROM users';
+        const values = [];
+        const conditions = [];
+
+        Object.entries(filters).forEach(([key, value], index) => {
+            conditions.push(`${key} = $${index + 1}`);
+            values.push(value);
+        });
+
+        if (conditions.length > 0) {
+            query += ` WHERE ${conditions.join(' AND ')}`;
+        }
+
         return await this.query(query, values);
     }
 

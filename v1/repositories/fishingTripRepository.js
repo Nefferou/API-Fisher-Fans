@@ -42,7 +42,28 @@ class FishingTripRepository extends BaseRepository {
         return await this.querySingle('SELECT * FROM trips WHERE id = $1', [id]);
     }
 
-    static async getAllTrips(query, values) {
+    static async getAllTrips(filters) {
+        let query = `
+        SELECT DISTINCT t.*
+        FROM trips t
+        LEFT JOIN trip_boat tb ON t.id = tb.trip_id
+        LEFT JOIN user_trips ut ON t.id = ut.trip_id
+        WHERE 1=1
+    `;
+        const values = [];
+        let parameterIndex = 1;
+
+        const addCondition = (condition, value) => {
+            query += ` AND ${condition} $${parameterIndex}`;
+            values.push(value);
+            parameterIndex++;
+        };
+
+        if (filters.beginDate) addCondition('t.begin_date >=', filters.beginDate);
+        if (filters.endDate) addCondition('t.end_date <=', filters.endDate);
+        if (filters.organiserId) addCondition('ut.user_id =', filters.organiserId);
+        if (filters.boatId) addCondition('tb.boat_id =', filters.boatId);
+
         return await this.query(query, values);
     }
 

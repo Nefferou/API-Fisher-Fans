@@ -61,40 +61,14 @@ class FishingTrip {
     }
 
     static async getAllTrips (filters) {
-        let query = `
-            SELECT DISTINCT t.*
-            FROM trips t
-            LEFT JOIN trip_boat tb ON t.id = tb.trip_id
-            LEFT JOIN user_trips ut ON t.id = ut.trip_id
-            WHERE 1=1
-        `;
-        const values = [];
-        let parameterIndex = 1;
-
-        if (filters.beginDate) {
-            query += ` AND t.begin_date >= $${parameterIndex}`;
-            values.push(filters.beginDate);
-            parameterIndex++;
-        }
-        if (filters.endDate) {
-            query += ` AND t.end_date <= $${parameterIndex}`;
-            values.push(filters.endDate);
-            parameterIndex++;
-        }
         if (filters.organiserId) {
             await GeneralCheckers.checkUserExistsById(filters.organiserId, 'Organisateur');
-            query += ` AND ut.user_id = $${parameterIndex}`;
-            values.push(filters.organiserId);
-            parameterIndex++;
         }
         if (filters.boatId) {
             await GeneralCheckers.checkBoatExists(filters.boatId);
-            query += ` AND tb.boat_id = $${parameterIndex}`;
-            values.push(filters.boatId);
-            parameterIndex++;
         }
 
-        const result = await FishingTripRepository.getAllTrips(query, values);
+        const result = await FishingTripRepository.getAllTrips(filters);
 
         for (const trip of result) {
             trip.organiser = await FishingTripRepository.fetchTripOrganiser(trip.id);

@@ -1,4 +1,4 @@
-const FishingTrip = require('../models/fishingTripModel');
+const FishingTrip = require('../services/fishingTripService');
 const catchAsync = require('../../utils/catchAsync');
 
 exports.createTrip = catchAsync(async (req, res) => {

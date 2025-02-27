@@ -1,4 +1,4 @@
-const Reservation = require('../models/reservationModel');
+const Reservation = require('../services/reservationService');
 const catchAsync = require('../../utils/catchAsync');
 
 exports.createReservation = catchAsync(async (req, res) => {

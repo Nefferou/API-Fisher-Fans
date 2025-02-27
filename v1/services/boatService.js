@@ -42,39 +42,11 @@ class Boat {
     }
 
     static async getAllBoats (filters){
-        let query = 'SELECT * FROM boats';
-        const values = [];
-        const conditions = [];
-
-        Object.entries(filters).forEach(([key, value]) => {
-            if (key === 'minLatitude') {
-                conditions.push(`latitude >= $${values.length + 1}`);
-                values.push(value);
-            } else if (key === 'maxLatitude') {
-                conditions.push(`latitude <= $${values.length + 1}`);
-                values.push(value);
-            } else if (key === 'minLongitude') {
-                conditions.push(`longitude >= $${values.length + 1}`);
-                values.push(value);
-            } else if (key === 'maxLongitude') {
-                conditions.push(`longitude <= $${values.length + 1}`);
-                values.push(value);
-            }
-        });
-
-        if (conditions.length > 0) {
-            query += ' WHERE ' + conditions.join(' AND ');
-        }
-
         if (filters.ownerId) {
             await GeneralCheckers.checkUserExistsById(filters.ownerId, 'Propriétaire');
-
-            query += conditions.length > 0 ? ' AND ' : ' WHERE ';
-            query += 'id IN (SELECT boat_id FROM user_boats WHERE user_id = $' + (values.length + 1) + ')';
-            values.push(filters.ownerId);
         }
 
-        const result = await BoatRepository.getAllBoats(query, values);
+        const result = await BoatRepository.getAllBoats(filters);
 
         for (const boat of result) {
             boat.equipments = await BoatRepository.fetchBoatEquipments(boat.id);

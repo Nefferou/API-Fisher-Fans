@@ -49,29 +49,14 @@ class Reservation {
     }
 
     static async getAllReservations (filters) {
-        let query = 'SELECT * FROM reservations';
-        const values = [];
-        const conditions = [];
-
         if (filters.tripId) {
             await GeneralCheckers.checkTripExists(filters.tripId);
-            const reservations = await ReservationRepository.getAllReservations('SELECT * FROM trip_reservations WHERE trip_id = $1', [filters.tripId]);
-            const reservationIds = reservations.map(reservation => reservation.reservation_id);
-            conditions.push(`id IN (${reservationIds.join(', ')})`);
         }
-
         if (filters.userId) {
             await GeneralCheckers.checkUserExistsById(filters.userId);
-            const reservations = await ReservationRepository.getAllReservations('SELECT * FROM user_reservations WHERE user_id = $1', [filters.userId]);
-            const reservationIds = reservations.map(reservation => reservation.reservation_id);
-            conditions.push(`id IN (${reservationIds.join(', ')})`);
         }
 
-        if (conditions.length > 0) {
-            query += ' WHERE ' + conditions.join(' AND ');
-        }
-
-        const result = await ReservationRepository.getAllReservations(query, values);
+        const result = await ReservationRepository.getAllReservations(filters);
 
         for (const reservation of result) {
             const ids = await ReservationRepository.fetchUserIdTripId(reservation.id);

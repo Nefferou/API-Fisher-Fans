@@ -40,7 +40,31 @@ class FishingLogRepository extends BaseRepository {
         return await this.querySingle('SELECT * FROM fishing_logs WHERE id = $1', [id]);
     }
 
-    static async getAllLogs(query, values) {
+    static async getAllLogs(filters) {
+        let query = 'SELECT * FROM fishing_logs';
+        const values = [];
+        const conditions = [];
+
+        const addCondition = (key, operator, value) => {
+            conditions.push(`${key} ${operator} $${values.length + 1}`);
+            values.push(value);
+        };
+
+        if (filters.fish_name) addCondition('fish_name', '=', filters.fish_name);
+        if (filters.location) addCondition('location', '=', filters.location);
+        if (filters.date) addCondition('date', '=', filters.date);
+        if (filters.freed !== undefined) addCondition('freed', '=', filters.freed);
+
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+
+        if (filters.ownerId) {
+            query += conditions.length > 0 ? ' AND ' : ' WHERE ';
+            query += 'id IN (SELECT log_id FROM user_logs WHERE user_id = $' + (values.length + 1) + ')';
+            values.push(filters.ownerId);
+        }
+
         return await this.query(query, values);
     }
 

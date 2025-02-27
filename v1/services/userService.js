@@ -49,20 +49,7 @@ class User {
     }
 
     static async getAllUsers (filters) {
-        let query = 'SELECT * FROM users';
-        const values = [];
-        const conditions = [];
-
-        Object.entries(filters).forEach(([key, value], index) => {
-            conditions.push(`${key} = $${index + 1}`);
-            values.push(value);
-        });
-
-        if (conditions.length > 0) {
-            query += ` WHERE ${conditions.join(' AND ')}`;
-        }
-
-        const result = await UserRepository.getAllUsers(query, values);
+        const result = await UserRepository.getAllUsers(filters);
 
         for (const user of result) {
             user.spokenLanguages = await UserRepository.fetchSpokenLanguages(user.id);

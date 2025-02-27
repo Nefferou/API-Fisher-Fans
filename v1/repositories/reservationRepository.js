@@ -44,7 +44,25 @@ class ReservationRepository extends BaseRepository {
         return await this.querySingle('SELECT * FROM reservations WHERE id = $1', [id]);
     }
 
-    static async getAllReservations(query, values) {
+    static async getAllReservations(filters) {
+        let query = 'SELECT * FROM reservations';
+        const values = [];
+        const conditions = [];
+
+        if (filters.tripId) {
+            conditions.push(`id IN (SELECT reservation_id FROM trip_reservations WHERE trip_id = $${values.length + 1})`);
+            values.push(filters.tripId);
+        }
+
+        if (filters.userId) {
+            conditions.push(`id IN (SELECT reservation_id FROM user_reservations WHERE user_id = $${values.length + 1})`);
+            values.push(filters.userId);
+        }
+
+        if (conditions.length > 0) {
+            query += ' WHERE ' + conditions.join(' AND ');
+        }
+
         return await this.query(query, values);
     }
 
