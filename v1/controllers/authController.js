@@ -1,15 +1,14 @@
-const bcrypt = require("bcryptjs");
 const User= require("../models/userModel");
+const catchAsync = require('../../utils/catchAsync');
 const jwt = require("jsonwebtoken");
 
-exports.register = async (req, res) => {
+exports.register = catchAsync(async (req, res) => {
     const { firstname, lastname, email, password, birthday } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.createUser({ firstname, lastname, email, password: hashedPassword, birthday, tel: "", address: "", postal_code: "", city: "", profile_picture: "", status: "", society_name: "", activity_type: "", boat_license: "", insurance_number: "", siret_number: "", rc_number: "", spokenLanguages: [] });
-    res.json(user);
-}
+    const user = await User.createUser({ firstname, lastname, email, password, birthday, tel: "", address: "", postal_code: "", city: "", profile_picture: "", status: "", society_name: "", activity_type: "", boat_license: "", insurance_number: "", siret_number: "", rc_number: "", spokenLanguages: [] });
+    res.status(201).json(user);
+});
 
-exports.login = async (req, res) => {
+exports.login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.getUserByEmail(email);
     if (!user || !(await bcrypt.compare(password, user.password))) {
@@ -19,5 +18,5 @@ exports.login = async (req, res) => {
     const token = jwt.sign({ id: user.id, email: user.email }, process.env.JWT_SECRET, {
         expiresIn: '1h'
     });
-    res.json({ token, user: { id: user.id, email: user.email, firstname: user.firstname } });
-}
+    res.status(200).json({ token, user: { id: user.id, email: user.email, firstname: user.firstname } });
+});

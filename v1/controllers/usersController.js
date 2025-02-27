@@ -1,12 +1,11 @@
 const User = require('../models/userModel');
-const bcrypt = require("bcryptjs");
 const catchAsync = require('../../utils/catchAsync');
+const {hashPassword} = require('../../utils/hashPassword');
 
 exports.createUser = catchAsync(async (req, res) => {
-    const { firstname, lastname, email, password, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.createUser({ firstname, lastname, email, password: hashedPassword, birthday, tel, address, postal_code, city, profile_picture, status, society_name, activity_type, boat_license, insurance_number, siret_number, rc_number, spokenLanguages });
-    res.status(200).json(user);
+    const userData = { ...req.body, password: await hashPassword(req.body.password) };
+    const user = await User.createUser(userData);
+    res.status(201).json(user);
 });
 
 exports.updateUser = catchAsync(async (req, res) => {
