@@ -1,9 +1,11 @@
 const FishingTripRepository = require('../repositories/fishingTripRepository');
-const GeneralCheckers = require('../../utils/generalCheckers');
-const SpecificCheckers = require('../../utils/specificCheckers');
+const GeneralCheckers = require('../checkers/generalCheckers');
+const SpecificCheckers = require('../checkers/specificCheckers');
+const {fishingTripRequiredFields} = require('../checkers/requiredFieldsList');
 
 class FishingTrip {
     static async createTrip (data) {
+        await GeneralCheckers.checkRequiredFields(data, fishingTripRequiredFields);
         await this.validateTripData(data);
         const result = await FishingTripRepository.insertTrip(data);
         await FishingTripRepository.associateTripToBoat(result.id, data.boat);
@@ -12,6 +14,7 @@ class FishingTrip {
     }
 
     static async updateTrip (id, data) {
+        await GeneralCheckers.checkRequiredFields(data, fishingTripRequiredFields);
         await GeneralCheckers.checkTripExists(id);
         await this.validateTripData(data);
         const result = await FishingTripRepository.updateTripDetails(id, data);

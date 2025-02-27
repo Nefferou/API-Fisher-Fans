@@ -1,8 +1,10 @@
 const FishingLogRepository = require('../repositories/fishingLogRepository');
-const GeneralCheckers = require('../../utils/generalCheckers');
+const GeneralCheckers = require('../checkers/generalCheckers');
+const {fishingLogRequiredFields} = require('../checkers/requiredFieldsList');
 
 class FishingLog {
     static async createLog (data) {
+        await GeneralCheckers.checkRequiredFields(data, fishingLogRequiredFields);
         await this.validateLogData(data);
         const result = await FishingLogRepository.insertLog(data);
         await FishingLogRepository.associateLogToUser(result.id, data.owner);
@@ -10,6 +12,7 @@ class FishingLog {
     }
 
     static async updateLog (id, data){
+        await GeneralCheckers.checkRequiredFields(data, fishingLogRequiredFields);
         await GeneralCheckers.checkLogExists(id);
         await this.validateLogData(data);
         const result = await FishingLogRepository.updateLogDetails(id, data);

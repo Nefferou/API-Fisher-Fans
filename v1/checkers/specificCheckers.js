@@ -1,5 +1,5 @@
-const AppError = require('./appError');
-const pool = require('../dbConfig');
+const AppError = require('../../utils/appError');
+const pool = require('../../dbConfig');
 
 const SpecificCheckers = {
     async checkUserBoatLicense(userId, requiredLicense) {

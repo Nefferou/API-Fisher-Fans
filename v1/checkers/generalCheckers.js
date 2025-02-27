@@ -1,7 +1,14 @@
-const AppError = require('./appError');
-const pool = require('../dbConfig');
+const AppError = require('../../utils/appError');
+const pool = require('../../dbConfig');
 
 const GeneralCheckers = {
+    async checkRequiredFields(data, requiredFields) {
+        const missingFields = requiredFields.filter(field => !data[field]);
+        if (missingFields.length > 0) {
+            throw new AppError(`Champs manquants: ${missingFields.join(', ')}`, 400);
+        }
+    },
+
     async checkUserExistsByEmail(email) {
         const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
         if (user.rowCount > 0) {

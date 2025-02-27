@@ -1,8 +1,10 @@
 const UserRepository = require('../repositories/userRepository');
-const GeneralCheckers = require('../../utils/generalCheckers');
+const GeneralCheckers = require('../checkers/generalCheckers');
+const {userRequiredFields} = require('../checkers/requiredFieldsList');
 
 class User {
     static async createUser (data) {
+        await GeneralCheckers.checkRequiredFields(data, userRequiredFields);
         await this.validateUserData(data);
         const result = await UserRepository.insertUser(data);
         await UserRepository.associateSpokenLanguages(result.id, data.spokenLanguages);
@@ -10,6 +12,7 @@ class User {
     }
 
     static async updateUser (id, data)  {
+        await GeneralCheckers.checkRequiredFields(data, userRequiredFields);
         await GeneralCheckers.checkUserExistsById(id);
         await this.validateUserData(data);
         const result = await UserRepository.updateUserDetails(id, data);

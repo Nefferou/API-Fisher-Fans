@@ -1,14 +1,17 @@
 const BoatRepository = require('../repositories/boatRepository');
-const GeneralCheckers = require('../../utils/generalCheckers');
-const SpecificCheckers = require('../../utils/specificCheckers');
+const GeneralCheckers = require('../checkers/generalCheckers');
+const SpecificCheckers = require('../checkers/specificCheckers');
+const {boatRequiredFields} = require('../checkers/requiredFieldsList');
 
 class Boat {
     static async createBoat (data){
+        await GeneralCheckers.checkRequiredFields(data, boatRequiredFields);
         await this.validateBoatData(data.owner, data.licence_type, data.equipments);
         return await this.saveBoatData(data);
     }
 
     static async updateBoat (id, data){
+        await GeneralCheckers.checkRequiredFields(data, boatRequiredFields);
         await GeneralCheckers.checkBoatExists(id);
         await this.validateBoatData(data.owner, data.licence_type, data.equipments);
         return await this.saveBoatData(data, id);

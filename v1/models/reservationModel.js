@@ -1,9 +1,11 @@
 const ReservationRepository = require('../repositories/reservationRepository');
-const GeneralCheckers = require('../../utils/generalCheckers');
-const SpecificCheckers = require("../../utils/specificCheckers");
+const GeneralCheckers = require('../checkers/generalCheckers');
+const SpecificCheckers = require("../checkers/specificCheckers");
+const {reservationRequiredFields} = require('../checkers/requiredFieldsList');
 
 class Reservation {
     static async createReservation (data) {
+        await GeneralCheckers.checkRequiredFields(data, reservationRequiredFields);
         await this.validateReservationData(data);
         const result = await ReservationRepository.insertReservation(data);
         await ReservationRepository.associateReservationToUser(result.id, data.user);
@@ -12,6 +14,7 @@ class Reservation {
     }
 
     static async updateReservation (id, data) {
+        await GeneralCheckers.checkRequiredFields(data, reservationRequiredFields);
         await GeneralCheckers.checkReservationExists(id);
         await this.validateReservationData(data, id);
         const result = await ReservationRepository.updateReservationDetails(id, data);
