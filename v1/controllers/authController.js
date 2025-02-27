@@ -1,6 +1,7 @@
 const User= require("../models/userModel");
 const catchAsync = require('../../utils/catchAsync');
 const jwt = require("jsonwebtoken");
+const {comparePassword} = require("../../utils/bcryptEssentials");
 
 exports.register = catchAsync(async (req, res) => {
     const { firstname, lastname, email, password, birthday } = req.body;
@@ -11,7 +12,7 @@ exports.register = catchAsync(async (req, res) => {
 exports.login = catchAsync(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.getUserByEmail(email);
-    if (!user || !(await bcrypt.compare(password, user.password))) {
+    if (!user || !(await comparePassword(password, user.password))) {
         return res.status(401).send('Email ou mot de passe incorrect');
     }
 

@@ -1,6 +1,6 @@
 const User = require('../models/userModel');
 const catchAsync = require('../../utils/catchAsync');
-const {hashPassword} = require('../../utils/hashPassword');
+const {hashPassword} = require('../../utils/bcryptEssentials');
 
 exports.createUser = catchAsync(async (req, res) => {
     const userData = { ...req.body, password: await hashPassword(req.body.password) };
