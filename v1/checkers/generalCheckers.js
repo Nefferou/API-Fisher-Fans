@@ -3,7 +3,7 @@ const pool = require('../../dbConfig');
 
 const GeneralCheckers = {
     async checkRequiredFields(data, requiredFields) {
-        const missingFields = requiredFields.filter(field => !data[field]);
+        const missingFields = requiredFields.filter(field => data[field] === undefined || data[field] === null);
         if (missingFields.length > 0) {
             throw new AppError(`Champs manquants: ${missingFields.join(', ')}`, 400);
         }
