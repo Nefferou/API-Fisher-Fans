@@ -27,8 +27,8 @@ exports.getReservation = catchAsync(async (req, res) => {
 });
 
 exports.getAllReservations = catchAsync(async (req, res) => {
-    const { tripId } = req.query;
-    const filters = { tripId };
+    const { tripId, userId } = req.query;
+    const filters = { tripId, userId };
     const reservations = await Reservation.getAllReservations(filters);
     res.status(200).json(reservations);
 });

@@ -661,6 +661,12 @@ paths:
           schema:
             type: integer
           description: ID de la sortie de pêche pour filtrer les réservations
+        - name: userId
+          in: query
+          required: false
+          schema:
+            type: integer
+          description: ID de l'utilisateur pour filtrer les réservations
       responses:
         '200':
           description: Liste des réservations récupérée avec succès

@@ -60,6 +60,13 @@ class Reservation {
             conditions.push(`id IN (${reservationIds.join(', ')})`);
         }
 
+        if (filters.userId) {
+            await GeneralCheckers.checkUserExistsById(filters.userId);
+            const reservations = await ReservationRepository.getAllReservations('SELECT * FROM user_reservations WHERE user_id = $1', [filters.userId]);
+            const reservationIds = reservations.map(reservation => reservation.reservation_id);
+            conditions.push(`id IN (${reservationIds.join(', ')})`);
+        }
+
         if (conditions.length > 0) {
             query += ' WHERE ' + conditions.join(' AND ');
         }
