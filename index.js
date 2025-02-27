@@ -11,8 +11,10 @@ const port = process.env.API_PORT || 3000;
 dotenv.config();
 
 // Import Middlewares
-const { authenticate } = require('./authMiddleware');
+const { authenticate } = require('./middlewares/authMiddleware');
+const { errorHandler } = require('./middlewares/errorMiddleware');
 app.use(express.json());
+app.use(errorHandler);
 
 // SSL credentials for HTTPS
 const credentials = {

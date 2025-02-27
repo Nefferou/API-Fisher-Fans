@@ -1,69 +1,37 @@
 const FishingTrip = require('../models/fishingTripModel');
-const AppError = require('../../utils/appError');
+const catchAsync = require('../../utils/catchAsync');
 
-exports.createTrip = async (req, res) => {
-    try {
-        const newTrip = await FishingTrip.createTrip(req.body);
-        res.status(201).json(newTrip);
-    } catch (err) {
-        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
-        else res.status(500).send('Erreur lors de la création de la sortie de pêche');
-    }
-};
+exports.createTrip = catchAsync(async (req, res) => {
+    const newTrip = await FishingTrip.createTrip(req.body);
+    res.status(201).json(newTrip);
+});
 
-exports.updateTrip = async (req, res) => {
-    try {
-        const updatedTrip = await FishingTrip.updateTrip(req.params.id, req.body);
-        res.status(200).json(updatedTrip);
-    } catch (err) {
-        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
-        else res.status(500).send('Erreur lors de la mise à jour de la sortie de pêche');
-    }
-};
+exports.updateTrip = catchAsync(async (req, res) => {
+    const updatedTrip = await FishingTrip.updateTrip(req.params.id, req.body);
+    res.status(200).json(updatedTrip);
+});
 
-exports.patchTrip = async (req, res) => {
-    try {
-        const patchedTrip = await FishingTrip.patchTrip(req.params.id, req.body);
-        res.status(200).json(patchedTrip);
-    } catch (err) {
-        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
-        else res.status(500).send('Erreur lors de la mise à jour de la sortie de pêche');
-    }
-}
+exports.patchTrip = catchAsync(async (req, res) => {
+    const patchedTrip = await FishingTrip.patchTrip(req.params.id, req.body);
+    res.status(200).json(patchedTrip);
+});
 
-exports.deleteTrip = async (req, res) => {
-    try {
-        await FishingTrip.deleteTrip(req.params.id);
-        res.status(204).send("Sortie de pêche supprimée avec succès");
-    } catch (err) {
-        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
-        else res.status(500).send('Erreur lors de la suppression de la sortie de pêche');
-    }
-};
+exports.deleteTrip = catchAsync(async (req, res) => {
+    await FishingTrip.deleteTrip(req.params.id);
+    res.status(204).send("Sortie de pêche supprimée avec succès");
+});
 
-exports.getTrip = async (req, res) => {
-    try {
-        const trip = await FishingTrip.getTrip(req.params.id);
-        res.status(200).json(trip);
-    } catch (err) {
-        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
-        else res.status(500).send('Erreur lors de la récupération de la sortie de pêche');
-    }
-};
+exports.getTrip = catchAsync(async (req, res) => {
+    const trip = await FishingTrip.getTrip(req.params.id);
+    res.status(200).json(trip);
+});
 
-exports.getAllTrips = async (req, res) => {
-    try {
-        // get query params
-        const {beginDate, endDate, organiserId, boatId} = req.query;
-        const filters = {beginDate, endDate, organiserId, boatId};
+exports.getAllTrips = catchAsync(async (req, res) => {
+    const {beginDate, endDate, organiserId, boatId} = req.query;
+    const filters = {beginDate, endDate, organiserId, boatId};
 
-        // remove undefined keys
-        Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
+    Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
 
-        const trips = await FishingTrip.getAllTrips(filters);
-        res.status(200).json(trips);
-    } catch (err) {
-        if (err instanceof AppError) res.status(err.statusCode).send(err.message);
-        else res.status(500).send('Erreur lors de la récupération des sorties de pêche');
-    }
-};
+    const trips = await FishingTrip.getAllTrips(filters);
+    res.status(200).json(trips);
+});
